@@ -1,0 +1,997 @@
+Local que deve ficar o painel gerencial 
+
+ 
+
+Modelo atual:
+ 
+
+Modelo proposto de informações (layout deve ser ajustado de acordo com o o UX do CRM):
+ 
+
+
+Filtro Atual:                                                 Filtro Proposto
+ 
+Filtro Proposto:
+
+
+
+
+Topo:
+
+ 
+
+Hoje so tem a aba Relatório gerencial, que será modificado o relatório gerencial para gerencial e adicionado mais 3 abas, Análise Faixa, Detalhado, SubItens.
+
+ 
+
+Painel IRC — Aba GERENCIAL
+Ela será para uma visão gerencial em que as informações serão colocadas de forma objetiva. 
+Para cada item do requisito, será divido em:
+	Pergunta que responde para entendimento da necessidade. 
+	Explicação (uso e análise que será feita)
+	Estrutura (estrutura da informação)
+	Medidas (medidas de entrada e saída)
+	Cálculo. 
+
+KPIs de informação
+________________________________________
+0. KPI: Total de Entes
+
+0.0 Imagem
+0.0.1 Atual
+
+ 
+0.0.2 Sugestão
+ 
+0.1. Pergunta
+Qual o tamanho do universo analisado?
+________________________________________
+0.2. Explicação
+Mostra a quantidade de entes no recorte.
+Uso:
+	Contextualizar os demais indicadores
+	Garantir comparabilidade de análises
+	Quantidade de entes caso venha ser selecionado algumas das opões como faixa, região, segmento, produto.
+________________________________________
+0.3. Estrutura
+	Unidade: quantidade
+	Não tem variação temporal relevante
+	Variação é de acordo com o que for selecionado no BI
+________________________________________
+0.4. Medidas
+	Contagem de entes distintos
+________________________________________
+0.5. Cálculo
+Total_entes = COUNT_DISTINCT(Ente)
+________________________________________
+________________________________________
+1. KPI: IRC Médio (0–100)
+1.0 Imagem
+1.0.1 Atual
+ 
+
+
+1.0.2 Sugestão
+ 
+1.1. Pergunta que responde
+Qual é a pontuação do período selecionado e quando que cresceu em relação a data início e data fim selecionado?
+________________________________________
+1.2. Explicação de negócio (uso e análise)
+Este indicador representa a quantidade de pontos dos clientes (entes).
+Usos:
+	Avaliar a pontuação total do período.
+	Monitorar evolução ao longo do tempo de quantos pontos foram adquiridos
+Leitura:
+	↑ aumentando → melhoria de relacionamento
+	↓ caindo → perda de qualidade da carteira
+________________________________________
+1.3. Estrutura
+	Unidade: pontos (0 a 100)
+	Atributos: 
+	IRC total de pontos do período final
+	Δ (variação em pontos)
+	% (variação em percentual)
+	Período (Início → Fim)
+________________________________________
+1.4. Medidas
+	IRC início
+	IRC fim
+	Variação absoluta (Δ pts)
+________________________________________
+1.5. Cálculo detalhado
+1 IRC por ente
+Cada ente tem um score:
+IRC_ente = Σ Pontos dos produtos/blocos último período selecionado em relação 
+Respeitando:
+	Limites por produto
+	Regras por segmento (Mun I, II, III, Estado)
+________________________________________
+2 IRC 
+IRC_variação = (Σ IRC_ente_i)  
+Onde:
+	i = cada ente do recorte
+________________________________________
+3 Variação Pto
+pto IRC = IRC_pto_fim − IRC_pto_inicio
+________________________________________
+4 Variação %
+% IRC = (IRC_médio_fim − IRC_médio_inicio) / IRC_médio_inicio
+
+________________________________________
+
+________________________________________
+2. KPI: IRC Médio (0–100) (novo)
+
+2.0 Novo
+ 
+2.1. Pergunta que responde
+Qual é o nível médio de relacionamento da carteira analisada e como ele evoluiu no período?
+________________________________________
+2.2. Explicação de negócio (uso e análise)
+Este indicador representa a qualidade média do relacionamento com os clientes (entes).
+Usos:
+	Avaliar saúde geral da carteira
+	Comparar regiões, agências ou segmentos
+	Monitorar evolução ao longo do tempo
+	Validar impacto de ações comerciais
+Leitura:
+	↑ aumentando → melhoria de relacionamento
+	↓ caindo → perda de qualidade da carteira
+________________________________________
+2.3. Estrutura
+	Unidade: pontos (0 a 100)
+	Atributos: 
+	IRC médio no mês final
+	Δ (variação em pontos)
+	Período (Início → Fim)
+________________________________________
+2.4. Medidas
+	IRC médio início
+	IRC médio fim
+	Variação absoluta (Δ pts)
+________________________________________
+2.5. Cálculo detalhado
+1 IRC por ente
+Cada ente tem um score:
+IRC_ente = Σ Pontos dos produtos/blocos
+Respeitando:
+	Limites por produto
+	Regras por segmento (Mun I, II, III, Estado)
+________________________________________
+2 IRC médio
+IRC_médio = (Σ IRC_ente_i) / N
+Onde:
+	i = cada ente do recorte
+	N = total de entes no recorte
+________________________________________
+2 Variação
+Δ IRC = IRC_médio_fim − IRC_médio_inicio
+________________________________________
+________________________________________
+3. KPI: Topo (Fidelizado + Rentabilização) (novo)
+3.0 Novo
+ 
+3.1. Pergunta
+Qual percentual da carteira está em nível alto de relacionamento?
+________________________________________
+3.2. Explicação
+Representa entes nas faixas mais maduras:
+	Fidelizado (70–100)
+	Em Diversificação (50–69)
+Uso:
+	Indicador de qualidade da carteira
+	Proxy de receita futura
+	Acompanhamento de estratégia
+________________________________________
+3.3. Estrutura
+	Unidade: percentual (%)
+	Complementar à Base/Alerta
+________________________________________
+3.4. Medidas
+	Qtd entes nessas faixas
+	Percentual sobre total.
+	A variação mostrada é +0,8 p.p., ou seja:  Aumentou 0,8 pontos percentuais em relação ao período anterior. Exemplo simples:
+	Se passou de 48,9% → 49,7%, o crescimento foi: +0,8 p.p. (não 0,8%)
+	Como usar no seu contexto (dashboards IRC, por exemplo)
+Esse tipo de métrica é usado para mostrar evolução clara de participação, evitando confusão com crescimento relativo.
+
+
+________________________________________
+3.5. Cálculo
+Qfᵢ = Quantidade fidelizado na data início 
+Qdᵢ = Quantidade em diversificação na data início 
+Qf𝒻 = Quantidade fidelizado na data fim 
+Qd𝒻 = Quantidade em diversificação na data fim
+Σ Entesᵢ = Total de entes na data início 
+Σ Entes𝒻 = Total de entes na data fim
+Calculos:
+
+Topo = (Qfᵢ + Qdᵢ) / Σ Entes
+P.P.=(Qff+Qdf)/ΣEntesf-(Qf_i+Qd_i)/(ΣEntes_i )
+________________________________________
+________________________________________
+4. KPI: Base / Alerta  (novo)
+4.0 Imagem
+ 
+4.1. Pergunta
+Quanto da carteira está em risco ou com baixo relacionamento?
+________________________________________
+4.2. Explicação
+Faixas:
+	Desenvolvimento
+	Prospecção
+Uso:
+	Identificar necessidade de atuação
+	Priorização comercial
+________________________________________
+4.3. Medidas
+	Percentual da base
+________________________________________
+4.4. Cálculo
+Qpᵢ = Quantidade Prospecção na data início 
+Qdᵢ = Quantidade em Desenvolvimento na data início 
+Qp𝒻 = Quantidade Prospecção na data fim 
+Qd𝒻 = Quantidade em Desenvolvimento na data fim
+Σ Entesᵢ = Total de entes na data início 
+Σ Entes𝒻 = Total de entes na data fim
+Calculos:
+Topo = (Qpᵢ + Qdᵢ) / Σ Entes
+P.P.=(Qpf+Qdf)/ΣEntesf-(Qp+Qd_i)/(ΣEntes_i )
+________________________________________
+________________________________________
+5. KPI: Taxa de Mobilidade  (novo)
+5.0 Imagem
+ 
+5.1. Pergunta
+Quantos clientes mudaram de faixa no período?
+________________________________________
+5.2. Explicação
+Mede a volatilidade da carteira. ( vai se encontrar na aba (Análise ) o KPI
+Uso:
+	Alta mobilidade → instabilidade
+	Baixa mobilidade → estagnação
+________________________________________
+5.3. Estrutura
+	Unidade: %
+	Baseado em mudança de faixa
+________________________________________
+5.4. Medidas
+	Qtd subiram
+	Qtd caíram
+________________________________________
+5.5. Cálculo
+Mobilidade = (Qtd_subiram + Qtd_cairam) / Total_entes
+Quando entes mudaram de faixa = (Qtd_subiram + Qtd_cairam)
+________________________________________
+________________________________________
+6. KPI: IRC vs Meta do Mês  (novo)
+ 
+6.1. Pergunta
+Estamos no ritmo para atingir o objetivo mensal?
+________________________________________
+6.2. Explicação
+Compara desempenho real vs meta.
+________________________________________
+6.3. Medidas
+	IRC atual
+	Meta mensal
+	Gap
+________________________________________
+6.4. Cálculo
+Gap = IRC_atual − Meta_mensal
+Classificação:
+SE Gap >= 0 → "No ritmo"
+SENÃO → "Fora do ritmo"
+________________________________________
+________________________________________
+7. KPI: IRC YTD vs Meta  (novo)
+7.0 Imagem
+ 
+7.1. Pergunta
+No acumulado do ano, estamos dentro da meta?
+________________________________________
+7.2. Explicação
+Reduz ruído mensal. 
+________________________________________
+7.3. Medidas
+	IRC médio acumulado (data fim)
+	Meta anual
+________________________________________
+7.4. Cálculo
+IRC_YTD = (Σ IRC_mensal_dt_fim) 
+Gap (p.p.) = Realizado * (% acumulado da curva)
+
+Pto: (Realizado / Meta Anual) - (% acumulado da curva)
+
+%Curva = lookup do mês (data fim)
+Meta Esperada = Meta Anual * %Curva
+Gap Ritmo = Realizado - Meta Esperada
+Gap Final = Realizado - Meta Anual
+
+> +10% → Muito acima
+0 a +10% → No ritmo
+-5% a 0 → Atenção
+< -5% → Fora
+
+________________________________________
+________________________________________
+8. KPI: Fidelizado vs meta (ano)  (novo)
+8.0 Imagem
+ 
+8.1. Pergunta
+No acumulado do ano, estamos dentro da meta?
+________________________________________
+8.2. Explicação
+Reduz ruído mensal. 
+________________________________________
+8.3. Medidas
+	Fidelizado médio acumulado (data fim)
+	Meta anual 
+________________________________________
+8.4. Cálculo
+Fidelizado_YTD = Meta Indicador
+Fidelizado = fidelizado_mensal_dt_fim
+Gap (p.p.) = (Fidelizado - Fidelizado_YTD) / Fidelizado
+
+> +10% → Muito acima
+0 a +10% → No ritmo
+-5% a 0 → Atenção
+< -5% → Fora
+
+________________________________________
+________________________________________
+8. Tabela: Distribuição por Faixa 
+
+8.0.1 Anterior
+ 
+
+8.0.2 Atualizado
+ 
+8.1. Pergunta
+Como a carteira está distribuída entre os níveis de relacionamento?
+________________________________________
+8.2. Explicação
+Mostra equilíbrio da base.
+________________________________________
+8.3. Estrutura
+Colunas:
+	Faixa
+	Qtd data Início
+	Qtd data Fim
+	%
+	Δ %
+________________________________________
+8.4. Medidas
+	Contagem por faixa
+	Percentual
+________________________________________
+8.5. Cálculo
+%_faixa = Qtd_faixa / Total_entes
+Δ = %_fim − %_inicio
+________________________________________
+________________________________________
+9. Tabela: Desempenho por Região
+9.0.1. Anterior
+ 
+
+9.0.2. Atualizado
+ 
+
+
+9.1. Pergunta
+Qual região performa melhor?
+________________________________________
+9.2. Explicação
+Comparação territorial.
+________________________________________
+9.3. Medidas
+	IRC médio por região por data inicio e data fim. 
+	Δ
+________________________________________
+9.4. Cálculo
+IRC_regiao = média(IRC_ente na região) 
+________________________________________
+9.4. Colunas
+	Região 
+	Média Inic
+	Média Fim
+	Δ
+
+________________________________________
+________________________________________
+10. Produtos/Serviços – Variação no Período (%)
+
+10.0.1 Anterior
+ 
+
+10.0.2 Atualizado 
+ 
+10.1. Pergunta
+Quais produtos estão puxando o resultado?
+________________________________________
+10.2. Explicação
+Mostra crescimento ou queda por produto.
+________________________________________
+10.3. Medidas
+	Valor início
+	Valor fim
+	Δ%
+________________________________________
+10.4. Cálculo
+Δ% = (Valor_fim − Valor_inicio) / Valor_inicio
+________________________________________
+________________________________________
+11. Consumo por Faixa (Consumo de Produtos/Servicos por Segmento)  
+11.1. Pergunta
+Clientes em que seguimento consomem mais?
+________________________________________
+11.2. Explicação
+Valida maturidade do relacionamento.
+________________________________________
+11.3. Medidas
+	Média produtos
+	% com 0
+	% com 5+
+________________________________________
+11.4. Cálculo
+Media_prod = Σ produtos / Qtd_entes
+%_0 = Qtd_sem_produtos / Total_faixa
+________________________________________
+________________________________________
+12. Produtos Mais Presentes
+ 
+12.1. Pergunta
+Quais produtos são mais comuns na carteira?
+________________________________________
+12.2. Cálculo
+Presença = Qtd_entes_com_produto / Total_entes
+________________________________________
+________________________________________
+
+Retirada da ABA GERENCIAL e Levar para a Aba Detalhado. 
+
+ 
+
+Aba ANÁLISE Faixa
+Objetivo da aba: explicar o que mudou entre Mês Início → Mês Fim e por que mudou, combinando:
+	Movimentos de faixa (subiu/caiu/permaneceu)
+	Fluxo detalhado entre faixas (matriz de transição)
+	Drivers (blocos e subgrupos/produtos) que explicam a variação 
+Premissas essenciais (regras do painel):
+________________________________________
+📌 Definições comuns (para todos os cálculos da aba)
+Conjuntos e índices
+	Seja E o conjunto de entes no recorte (após filtros).
+	Para cada ente e∈E, temos: 
+	IRC_ini (e): nota do IRC no mês inicial
+	IRC_fim (e): nota do IRC no mês final
+	F_ini (e): faixa do ente no mês inicial
+	F_fim (e): faixa do ente no mês final
+________________________________________
+1) KPI: Subiram de faixa
+(na faixa superior do período) 
+1.1. Pergunta que responde
+Quantos entes evoluíram de faixa do mês inicial para o mês final?
+1.2. Explicação (uso e análise)
+	Indica sucesso de evolução do relacionamento (qualidade).
+	Útil para medir se ações e estratégias estão funcionando.
+	Leitura rápida: “quantos subiram” (qtd) e “qual % do universo isso representa”. 
+1.3. Estrutura
+	Valor principal: qtd de entes
+	Subtexto:% do universo
+	Critério: comparação Fim vs Início 
+1.4. Medidas
+	UpCount: número de entes que subiram
+	UpRate: percentual do universo que subiu
+1.5. Cálculo detalhado (matemático)
+Defina uma ordem para as faixas:
+ord(Prosp)=1,"  " ord(Desenv)=2,"  " ord(Rentab)=3,"  " ord(Divers)=4,"  " ord(Fidel)=5
+Então:
+UpCount=∑_(e∈E)▒〖1[ord(〗 F_fim (e))>ord(F_ini (e))]
+UpRate=UpCount/N
+________________________________________
+2) KPI: Caíram de faixa
+(redução de relacionamento) 
+2.1. Pergunta
+Quantos entes regrediram de faixa no período?
+2.2. Explicação
+	Indicador de risco e perda de qualidade.
+	Ajuda a priorizar investigação: “por que caiu?”.
+	Serve para acompanhar deterioração na base. 
+2.3. Estrutura
+	Qtd de entes
+	% do universo
+	Base: Fim vs Início 
+2.4. Medidas
+	DownCount
+	DownRate
+2.5. Cálculo
+DownCount=∑_(e∈E)▒〖1[ord(〗 F_fim (e))<ord(F_ini (e))]
+DownRate=DownCount/N
+________________________________________
+3) KPI: Estáticos
+(permaneceram na mesma faixa) 
+3.1. Pergunta
+Quantos entes não mudaram de faixa, mesmo que a nota tenha oscilado?
+3.2. Explicação
+	Mede estabilidade/estagnação do relacionamento por faixa.
+	Importante porque um ente pode “estar estático” na faixa, mas variar em pontos dentro dela. (O próprio mockup explicita isso.) 
+3.3. Estrutura
+	Qtd (estáticos)
+	% do universo (permaneceram) 
+3.4. Medidas
+	StaticCount
+	StaticRate
+3.5. Cálculo
+StaticCount=∑_(e∈E)▒〖1[〗 F_fim (e)=F_ini (e)]
+StaticRate=StaticCount/N
+________________________________________
+4) KPI: Taxa de mobilidade
+(subiram + caíram) 
+4.1. Pergunta
+Qual percentual do universo mudou de faixa (para cima ou para baixo)?
+4.2. Explicação
+	Métrica de volatilidade do indicador.
+	Útil para interpretar ruído/campanhas: 
+	Mobilidade alta: carteira “se mexendo” (pode ser bom ou ruim).
+	Mobilidade muito baixa: carteira “parada”. 
+4.3. Estrutura
+	Percentual (%)
+	Subtexto: número de entes que mudaram 
+4.4. Medidas
+	MobilityCount
+	MobilityRate
+4.5. Cálculo
+MobilityCount=UpCount+DownCount
+MobilityRate=MobilityCount/N
+Checagem de consistência:
+UpCount+DownCount+StaticCount=N
+(se não fechar, há problema de base/joins/duplicidade). 
+________________________________________
+5) Tabela principal: Movimentação por Faixa (Início → Fim)
+5.1. Pergunta que responde
+Para cada faixa, quantos estavam nela no início e no fim, quantos entraram, quantos saíram, qual o saldo, a retenção, e como mudou o IRC médio da faixa?
+5.2. Explicação (uso e análise)
+Essa tabela é o resumo executivo por faixa — ela mostra “o que aconteceu com cada faixa”.
+Exemplos de uso:
+	Identificar faixa que está perdendo base (saldo negativo).
+	Medir retenção (quem permanece na faixa).
+	Localizar gargalos (ex.: muitos entram em “Desenv” mas poucos saem para cima). 
+5.3. Estrutura (colunas e significado)
+Conforme o mockup, colunas: 
+	Faixa
+	Qtd (Ini)
+	Qtd (Fim)
+	Entraram
+	Saíram
+	Saldo
+	Permanec.
+	% Retenção
+	Δ IRC médio
+5.4. Medidas (por faixa f)
+Para cada faixa f:
+	QtdIni(f)
+	QtdFim(f)
+	Entraram(f)
+	Sairam(f)
+	Saldo(f)
+	Permanecem(f)
+	Retencao(f)
+	IRCmedIni(f)
+	IRCmedFim(f)
+	ΔIRCmed(f)
+5.5. Cálculo detalhado (por faixa f)
+Contagens
+QtdIni(f)=∑_(e∈E)▒〖1[〗 F_ini (e)=f]
+QtdFim(f)=∑_(e∈E)▒〖1[〗 F_fim (e)=f]
+Permanecem(f)=∑_(e∈E)▒〖1[〗 F_ini (e)=f∧F_fim (e)=f]
+Entradas e saídas
+Entraram(f)=∑_(e∈E)▒〖1[〗 F_ini (e)≠f∧F_fim (e)=f]
+Sairam(f)=∑_(e∈E)▒〖1[〗 F_ini (e)=f∧F_fim (e)≠f]
+Saldo e retenção
+Saldo(f)=QtdFim(f)-QtdIni(f)=Entraram(f)-Sairam(f)
+Retencao(f)={■((Permanecem(f))/(QtdIni(f)),&QtdIni(f)>0@0,&QtdIni(f)=0)┤
+IRC médio por faixa e variação
+IRCmedIni(f)=(∑_(e∈E)▒IR C_ini (e)⋅1[F_ini (e)=f])/(QtdIni(f))
+IRCmedFim(f)=(∑_(e∈E)▒IR C_fim (e)⋅1[F_fim (e)=f])/(QtdFim(f))
+ΔIRCmed(f)=IRCmedFim(f)-IRCmedIni(f)
+Observação importante: o mockup coloca “Δ IRC médio” na tabela por faixa. 
+________________________________________
+6) Visual: Matriz de Transição (DE → PARA)
+
+6.1. Pergunta que responde
+Entre quais faixas os entes se moveram? Qual foi o fluxo completo de “DE” para “PARA”?
+6.2. Explicação (uso e análise)
+A matriz é a visão mais diagnóstica da aba:
+	Diagonal: permaneceu
+	Acima da diagonal: subiu
+	Abaixo da diagonal: caiu 
+Usos:
+	Descobrir “de onde vieram” os entes que chegaram no topo (ex.: Rentab → Fidel).
+	Mapear o maior risco (ex.: Desenv → Prosp).
+	Ver o “caminho natural” de evolução (ex.: Prosp → Desenv → Divers). 
+6.3. Estrutura
+	Linhas: Faixa DE (início)
+	Colunas: Faixa PARA (fim)
+	Célula: quantidade de entes naquela transição 
+6.4. Medidas
+Para cada par (aⓜ,b)de faixas:
+	T(a,b): número de entes que foram de apara b
+6.5. Cálculo detalhado
+T(a,b)=∑_(e∈E)▒〖1[〗 F_ini (e)=a∧F_fim (e)=b]
+Checagens de consistência (obrigatórias):
+	Soma por linha = quantidade inicial da faixa:
+∑_b▒〖T(a,b)=QtdIni(a)〗
+	Soma por coluna = quantidade final da faixa:
+∑_a▒〖T(a,b)=QtdFim(b)〗
+	Soma total = universo:
+∑_a▒∑_b▒〖T(a,b)=N〗
+O próprio mockup sugere heatmap (cores) para leitura. 
+________________________________________
+7) Tabela: Drivers por Bloco (Macro)
+7.1. Pergunta
+Quais blocos explicaram a variação do IRC no período?
+7.2. Explicação (uso e análise)
+É a leitura “de causa” em nível macro:
+	Quais blocos puxaram a melhora (Δ positivo)
+	Quais blocos puxaram a queda (Δ negativo) 
+No mockup o bloco aparece como “Rentabilidade, Serviços, Investimento, Financiamento”.
+A cartilha amplia esse universo com Sustentabilidade/Financeiro etc., então aqui precisa existir um dicionário claro de “Bloco Macro” vs “Bloco do IRC”. 
+7.3. Estrutura
+Colunas no mockup:
+	Bloco
+	Participação (barra %)
+	Δ (em pontos)
+7.4. Medidas
+Para cada bloco b:
+	ScoreIni(b): soma (ou média) das contribuições do bloco no início
+	ScoreFim(b): soma (ou média) no fim
+	ΔScore(b)
+	Part(b): participação do bloco
+7.5. Cálculo detalhado (precisa da definição de “contribuição do bloco”)
+Assuma que cada ente tem contribuição de bloco:
+	C_ini (e,b): pontos do bloco bno início
+	C_fim (e,b): pontos do bloco bno fim
+Então por recorte:
+ScoreIni(b)=∑_(e∈E)▒C_ini (e,b)
+ScoreFim(b)=∑_(e∈E)▒C_fim (e,b)
+ΔScore(b)=ScoreFim(b)-ScoreIni(b)
+Participação (duas formas possíveis — defina 1 padrão):
+	Por contribuição absoluta no fim:
+Part(b)=(ScoreFim(b))/(∑_k▒〖ScoreFim(k)〗)
+	Por contribuição absoluta no “impacto” do período:
+Part(b)=(∣ΔScore(b)∣)/(∑_k▒〖∣ΔScore(k)∣〗)
+Requisito importante: você precisa definir qual “participação” é a correta no seu conceito (fim ou impacto). O mockup não explicita, só mostra a barra. 
+________________________________________
+8) Tabela: Drivers por Subgrupo (Tabela Completa)
+8.1. Pergunta
+Quais subgrupos/produtos explicam a diferença entre início e fim (por quantidade de entes impactados e por variação de pontos)?
+8.2. Explicação (uso e análise)
+Essa é a tabela “para analista”:
+	Encontrar os 10 maiores drivers positivos e negativos
+	Separar “efeito massa” (muitos entes mudaram um pouco) vs “efeito intensidade” (poucos entes mudaram muito)
+	Apoiar narrativa do comitê: “o que puxou o IRC” 
+8.3. Estrutura (colunas do mockup)
+O mockup lista: 
+	Nome SubGrupo
+	Qtd Ents
+	% Diferent
+	Qtd Subire
+	Qtd Perde
+	Média Nota Base
+	Média Nota
+	Soma Notas (Início)
+	Soma Notas (Fim)
+	Diferença (Ini→Fim)
+	TOTAL (soma)
+8.4. Medidas (por subgrupo s)
+Para cada subgrupo s:
+	Ents(s): entes com o subgrupo no universo (ou elegíveis — precisa definir)
+	DiffCount(s): entes em que o subgrupo mudou (pontos)
+	DiffRate(s): porcentagem de entes com mudança
+	UpSub(s): entes que ganharam pontos no subgrupo
+	DownSub(s): entes que perderam pontos no subgrupo
+	AvgIni(s),AvgFim(s)
+	SumIni(s), SumFim(s)
+	ΔSum(s)
+8.5. Cálculo detalhado (modelo matemático consistente)
+Variável base: contribuição do subgrupo por ente
+Defina:
+	p_ini (e,s): pontos do subgrupo spara o ente eno início
+	p_fim (e,s): pontos do subgrupo spara o ente eno fim
+	Δp(e,s)=p_fim (e,s)-p_ini (e,s)
+Entes do subgrupo (elegíveis)
+Ents(s)=∑_(e∈E)▒〖1[eligible(e,s)=1]〗
+(ou presença do produto; você precisa definir se “eligible” = “faz sentido para o ente” ou “tem/possui”).
+Quantidade e % de mudança
+DiffCount(s)=∑_(e∈E)▒〖1[Δp(e,s)≠0]〗
+DiffRate(s)=(DiffCount(s))/(Ents(s))
+Ganharam / Perderam
+UpSub(s)=∑_(e∈E)▒〖1[Δp(e,s)>0]〗
+DownSub(s)=∑_(e∈E)▒〖1[Δp(e,s)<0]〗
+Médias
+AvgIni(s)=(∑_(e∈E)▒p_ini (e,s))/(Ents(s))
+AvgFim(s)=(∑_(e∈E)▒p_fim (e,s))/(Ents(s))
+Somas e diferença (principal “driver”)
+SumIni(s)=∑_(e∈E)▒p_ini (e,s)
+SumFim(s)=∑_(e∈E)▒p_fim (e,s)
+ΔSum(s)=SumFim(s)-SumIni(s)=∑_(e∈E)▒〖Δp(e,s)〗
+O mockup recomenda ordenar por “Diferença (Ini→Fim)”. 
+________________________________________
+ Requisitos funcionais da aba (implementação)
+A aba “Análise” deve permitir (como intenção explícita do mockup):
+	Visualizar KPIs: subiram, caíram, estáticos, mobilidade. 
+	Tabela por faixa com expansão de “fluxos” (ao clicar). 
+	Matriz de transição (heatmap ideal) com leitura por diagonal e acima/abaixo. 
+	Drivers por bloco (macro) com participação e Δ. 
+	Drivers por subgrupo com ordenação por diferença e filtro por bloco/subgrupo. 
+________________________________________
+________________________________________
+Aba DETALHADO
+
+OBJETIVO DA ABA
+Permitir exploração granular da carteira, identificando exatamente:
+	Quem melhorou ou piorou
+	Onde (região, agência, segmento)
+	Por quê (produtos/blocos)
+	E permitindo drill até o nível do ente
+É a aba de ação (operacional), diferente da:
+	Gerencial → visão macro
+	Análise → diagnóstico
+	Detalhado → execução
+________________________________________
+PREMISSAS GLOBAIS
+Para todo cálculo:
+	E: conjunto de entes no recorte
+	IRC_ini (e), IRC_fim (e)
+	ΔIRC(e)=IRC_fim (e)-IRC_ini (e)
+________________________________________
+1) BLOCO: FILTROS E CONTROLES (Busca + Variação + Ordenação)
+1.1. Pergunta
+Como eu encontro rapidamente os entes relevantes para análise?
+________________________________________
+1.2. Explicação
+Permite:
+	Buscar ente específico
+	Filtrar por: 
+	Todas
+	Positivas (quem melhorou)
+	Negativas (quem piorou)
+	Ordenar: 
+	Δ pontos
+	Δ percentual
+________________________________________
+1.3. Estrutura
+	Campo texto (search)
+	Toggle (variação)
+	Toggle (ordenação)
+________________________________________
+1.4. Medidas
+	Classificação de variação
+	Ranking por Δ
+________________________________________
+1.5. Cálculo
+Classificação de variação:
+classe(e)={■(pos,&ΔIRC(e)>0@neg,&ΔIRC(e)<0@neu,&ΔIRC(e)=0)┤
+Ordenação:
+	Por Δ pontos:
+sort=∣ΔIRC(e)∣
+	Por Δ %:
+Δ%=(IRC_fim (e)-IRC_ini (e))/(IRC_ini (e))
+________________________________________
+2) Tabela: Regiões (vRegiao)
+2.1. Pergunta
+Qual região está melhorando ou piorando no período?
+________________________________________
+2.2. Explicação
+Visão agregada territorial.
+Uso:
+	Comparar regiões
+	Priorizar atuação geográfica
+________________________________________
+2.3. Estrutura
+Colunas:
+	Região
+	Crescimento (%)
+	Crescimento em nota (Δ pts)
+________________________________________
+2.4. Medidas
+Para cada região r:
+	IRC_ini (r)
+	IRC_fim (r)
+	ΔIRC(r)
+	Δ%(r)
+________________________________________
+2.5. Cálculo
+IRC_ini (r)=(∑_(e∈r)▒IR C_ini (e))/N_r 
+IRC_fim (r)=(∑_(e∈r)▒IR C_fim (e))/N_r 
+ΔIRC(r)=IRC_fim (r)-IRC_ini (r)
+Δ%(r)=(ΔIRC(r))/(IRC_ini (r))
+________________________________________
+3) Tabela: Agências de Relacionamento
+3.1. Pergunta
+Quais agências performaram melhor ou pior?
+________________________________________
+3.2. Explicação
+Permite análise de desempenho por unidade operacional.
+Uso:
+	Benchmark entre agências
+	Gestão de performance comercial
+________________________________________
+3.3. Estrutura
+Colunas:
+	Agência
+	Região
+	Qtd entes
+	IRC início
+	IRC fim
+	Δ pts
+	Δ %
+________________________________________
+3.4. Medidas
+Para cada agência a:
+	Mesmo conjunto do nível Região
+________________________________________
+3.5. Cálculo
+Igual ao da região, trocando agregação:
+IRC_fim (a)=(∑_(e∈a)▒IR C_fim (e))/N_a 
+________________________________________
+4) Tabela principal: Entes (Exploração)
+4.1. Pergunta
+Quais entes melhoraram ou pioraram e quanto?
+________________________________________
+4.2. Explicação
+É a tabela base da análise.
+Uso:
+	Identificar casos concretos
+	Priorizar atuação
+	Abrir detalhe do ente
+________________________________________
+4.3. Estrutura
+Colunas:
+	Ente
+	UF
+	Segmento
+	Faixa (Ini → Fim)
+	IRC início
+	IRC fim
+	Δ pts
+	Δ %
+________________________________________
+4.4. Medidas
+Para cada ente e:
+	IRC_ini (e)
+	IRC_fim (e)
+	ΔIRC(e)
+	Δ%(e)
+________________________________________
+4.5. Cálculo
+ΔIRC(e)=IRC_fim (e)-IRC_ini (e)
+Δ%(e)=(IRC_fim (e)-IRC_ini (e))/(IRC_ini (e))
+________________________________________
+5) Tabela: Produtos/Serviços (Variação)
+5.1. Pergunta
+Quais produtos estão crescendo ou caindo no período?
+________________________________________
+5.2. Explicação
+Mostra variação agregada do uso/nota dos produtos.
+Uso:
+	Identificar drivers operacionais
+	Apoiar decisão de negócio
+________________________________________
+5.3. Estrutura
+	Produto
+	Δ %
+________________________________________
+5.4. Medidas
+Para cada produto p:
+	Valor início
+	Valor fim
+________________________________________
+5.5. Cálculo
+Δ%(p)=(Valor_fim (p)-Valor_ini (p))/(Valor_ini (p))
+________________________________________
+6) Tabela: Mudança de Faixa (Municípios)
+6.1. Pergunta
+Quais entes mudaram de faixa?
+________________________________________
+6.2. Explicação
+Lista específica de evolução/regressão de relacionamento.
+Uso:
+	Ver promoções (ex.: Rentab → Fidel)
+	Ver regressões críticas
+________________________________________
+6.3. Estrutura
+	Ente
+	Faixa Inicial
+	Faixa Final
+________________________________________
+6.4. Medidas
+	Mudança de faixa (binária)
+________________________________________
+6.5. Cálculo
+MudouFaixa(e)={■(1,&F_ini (e)≠F_fim (e)@0,&caso contra ˊrio)┤
+________________________________________
+7) Visual: Variação por Faixa (Δ pts)
+7.1. Pergunta
+Em quais faixas a nota mais variou?
+________________________________________
+7.2. Explicação
+Mostra impacto no nível de relacionamento por categoria.
+________________________________________
+7.3. Medidas
+	Δ médio por faixa
+________________________________________
+7.4. Cálculo
+ΔIRC(f)=(∑_(e∈f)▒IR C_fim (e))/N_f -(∑_(e∈f)▒IR C_ini (e))/N_f 
+________________________________________
+8) Visual: Variação por Bloco
+8.1. Pergunta
+Qual bloco explicou a variação do IRC?
+________________________________________
+8.2. Explicação
+É o elo com a aba Análise.
+________________________________________
+8.3. Medidas
+Para cada bloco b:
+	Soma de pontos
+________________________________________
+8.4. Cálculo
+Δbloco(b)=∑_(e∈E)▒( P_fim (e,b)-P_ini (e,b))
+________________________________________
+9) Tabela: Drivers por Produto (Entes Impactados)
+9.1. Pergunta
+Quais produtos impactaram mais entes?
+________________________________________
+9.2. Explicação
+Foco em volume de impacto.
+________________________________________
+9.3. Medidas
+	Entes impactados
+	Δ médio
+________________________________________
+9.4. Cálculo
+Impacto(p)=∑_(e∈E)▒〖1[Δp(e)≠0]〗
+Δmedio(p)=(∑Δp(e))/(Impacto(p))
+________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10) PAINEL LATERAL: Detalhe do Ente
+10.1. Pergunta
+Por que um ente específico melhorou ou piorou?
+________________________________________
+10.2. Explicação
+Drill completo no cliente.
+________________________________________
+10.3. Estrutura
+	IRC atual
+	Faixa
+	Δ
+	Pontos restantes para próxima faixa
+	Blocos
+	Evolução
+	Produtos
+________________________________________
+10.4. Medidas
+	Todas no nível do ente
+________________________________________
+10.5. Cálculo
+Gap para próxima faixa:
+Gap=LimiteSuperiorFaixa-IRC_fim (e)
+________________________________________
+Evolução:
+Serie(t)=IRC_mes (e,t)
