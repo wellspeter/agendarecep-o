@@ -1,0 +1,2615 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GEEGO — IRC (Mockup Power BI)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-dark:  #0d1f3c;
+      --blue-mid:   #1a3a6b;
+      --blue-main:  #2455a0;
+      --blue-light: #3a6fba;
+      --amber:      #f5a623;
+      --green:      #1e8c45;
+      --green-lt:   #d4edda;
+      --red:        #c0392b;
+      --red-lt:     #fde8e8;
+      --orange:     #e67e22;
+      --orange-lt:  #fef3e2;
+      --grey-bg:    #dde1e8;
+      --grey-panel: #f0f2f5;
+      --grey-line:  #cdd2da;
+      --white:      #ffffff;
+      --text-dark:  #1a1f2e;
+      --text-mid:   #3d4560;
+      --text-muted: #6b7494;
+      --text-tiny:  #8a93b0;
+      --font: 'Segoe UI', system-ui, sans-serif;
+      --fs-xxs: 9px;
+      --fs-xs:  10px;
+      --fs-sm:  11px;
+      --fs-md:  12px;
+      --fs-lg:  13px;
+      --fs-xl:  14px;
+    }
+
+    html, body { height: 100%; font-family: var(--font); background: var(--grey-bg); color: var(--text-dark); overflow: hidden; }
+
+    /* HEADER */
+    .hdr { background: var(--blue-dark); display: flex; flex-direction: column; }
+    .hdr-top { display: flex; align-items: center; padding: 6px 14px; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .logo-wrap { display: flex; align-items: center; gap: 8px; }
+    .logo-icon { width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .logo-txt { font-size: var(--fs-xl); font-weight: 700; color: white; letter-spacing: 1.5px; }
+    .hdr-mid { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+    .hdr-title { font-size: 15px; font-weight: 700; color: white; letter-spacing: 1px; }
+    .hdr-pill { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); color: rgba(255,255,255,.9); padding: 4px 8px; border-radius: 999px; font-size: var(--fs-xxs); font-weight: 700; letter-spacing: .2px; white-space: nowrap; }
+    .hdr-tabs { background: var(--blue-mid); display: flex; justify-content: space-between; align-items: stretch; }
+    .ver-tag { padding: 0 14px; font-size: var(--fs-xs); font-weight: 700; color: rgba(255,255,255,.7); display: flex; align-items: center; border-right: 1px solid rgba(255,255,255,.15); }
+    .tabs-right { display: flex; align-items: stretch; }
+    .tab { padding: 8px 22px; border: none; background: transparent; color: rgba(255,255,255,.78); font-size: var(--fs-sm); font-weight: 700; cursor: pointer; letter-spacing: .3px; border-bottom: 2px solid transparent; transition: .2s; }
+    .tab:hover { background: rgba(255,255,255,.08); color: white; }
+    .tab.active { background: var(--amber); color: var(--blue-dark); border-bottom-color: #c07d10; }
+
+    /* LAYOUT */
+    .wrap { display: flex; height: calc(100vh - 72px); overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { width: 182px; flex-shrink: 0; background: white; border-right: 1px solid var(--grey-line); display: flex; flex-direction: column; overflow-y: auto; }
+    .sb-hdr { background: var(--blue-dark); color: white; padding: 7px 10px; font-size: var(--fs-xs); font-weight: 800; letter-spacing: 2px; text-align: center; flex-shrink: 0; }
+    .sb-group { padding: 8px 10px 6px; border-bottom: 1px solid #e8eaf0; }
+    .sb-label { font-size: var(--fs-xxs); font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; display: block; }
+    .sb-select { width: 100%; padding: 5px 7px; border: 1px solid var(--grey-line); border-radius: 3px; font-size: var(--fs-xs); color: var(--text-dark); background: white; cursor: pointer; }
+    .sb-select:focus { outline: none; border-color: var(--blue-main); }
+    .sb-date-row { display: flex; gap: 4px; }
+    .sb-date-row .sb-select { width: 50%; }
+    .sb-hint { margin-top: 5px; font-size: var(--fs-xxs); color: var(--text-tiny); line-height: 1.2; }
+    .sb-btns { padding: 8px 10px; display: flex; gap: 6px; margin-top: auto; border-top: 1px solid #e8eaf0; background: #fbfcff; }
+    .sb-btn { flex: 1; padding: 6px 4px; border: none; border-radius: 3px; font-size: var(--fs-xxs); font-weight: 900; cursor: pointer; letter-spacing: .2px; }
+    .sb-btn-clear { background: #8a93b0; color: white; }
+    .sb-btn-apply { background: var(--blue-main); color: white; }
+
+    /* CONTENT */
+    .content { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+
+    /* PANELS */
+    .panel { display: none; flex-direction: column; gap: 8px; }
+    .panel.active { display: flex; }
+
+    /* CARD */
+    .card { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.1); overflow: hidden; }
+    .card-hdr { background: linear-gradient(90deg, var(--blue-mid) 0%, var(--blue-light) 100%); color: white; padding: 5px 10px; font-size: var(--fs-xs); font-weight: 900; letter-spacing: .2px; display: flex; align-items: center; gap: 6px; }
+    .card-body { padding: 8px 10px; }
+    .muted { color: var(--text-muted); }
+    .tiny { font-size: var(--fs-xxs); color: var(--text-tiny); }
+    .pos { color: var(--green); } .neg { color: var(--red); } .neu { color: var(--orange); }
+
+    /* HELP ICON */
+    .help {
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.25);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; color: rgba(255,255,255,.95);
+      cursor: help; flex-shrink: 0;
+    }
+    .help.dark {
+      background: #e9eef9;
+      border-color: #d3ddf3;
+      color: #1a3a6b;
+    }
+
+    /* KPI STRIP */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .kpi { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.1); padding: 8px 12px; border-left: 3px solid var(--blue-main); min-height: 64px; }
+    .kpi-lbl { font-size: var(--fs-xxs); font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; gap: 6px; }
+    .kpi-val { font-size: 22px; font-weight: 900; color: var(--text-dark); line-height: 1.1; margin: 3px 0 2px; }
+    .kpi-sub { font-size: var(--fs-xxs); font-weight: 700; color: var(--text-tiny); line-height: 1.2; }
+    .kpi-chg { font-size: var(--fs-xs); font-weight: 900; }
+
+    /* GRID */
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .g4 { display: grid; grid-template-columns: 1fr 1.4fr 1.2fr 1fr; gap: 8px; }
+
+    /* BARS */
+    .bar-track { background: #e8eaf0; border-radius: 3px; height: 18px; overflow: hidden; }
+    .bar-fill { height: 100%; display: flex; align-items: center; padding-left: 6px; color: white; font-size: var(--fs-xxs); font-weight: 900; transition: width .8s; white-space: nowrap; }
+    .bar-f1 { background: #1e8c45; }
+    .bar-f2 { background: #27ae60; }
+    .bar-f3 { background: #f5a623; }
+    .bar-f4 { background: #e67e22; }
+    .bar-f5 { background: #7f8c8d; }
+
+    /* TABLES */
+    .data-tbl { width: 100%; border-collapse: collapse; }
+    .data-tbl thead tr { background: var(--blue-mid); color: white; }
+    .data-tbl th { padding: 5px 7px; font-size: var(--fs-xxs); font-weight: 900; text-align: left; letter-spacing: .2px; white-space: nowrap; }
+    .data-tbl td { padding: 5px 7px; font-size: var(--fs-xs); border-bottom: 1px solid #eef0f4; white-space: nowrap; }
+    .data-tbl tbody tr { cursor: pointer; }
+    .data-tbl tbody tr:hover { background: #f4f6fb; }
+
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: var(--fs-xxs); font-weight: 900; }
+    .badge-g { background: #d4edda; color: #1e5631; }
+    .badge-r { background: #fde8e8; color: #7b1a14; }
+    .badge-y { background: #fef3e2; color: #7a4610; }
+    .badge-b { background: #dbeafe; color: #1a3a6b; }
+    .badge-ok { background: #d4edda; color: #145c2a; }
+    .badge-bad { background: #fde8e8; color: #7b1a14; }
+
+    /* SEARCH BAR */
+    .search-row { display: flex; gap: 8px; align-items: center; background: white; padding: 7px 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    .search-inp { flex: 1; padding: 5px 8px; border: 1px solid var(--grey-line); border-radius: 3px; font-size: var(--fs-sm); }
+    .search-inp:focus { outline: none; border-color: var(--blue-main); }
+    .toggle { display: inline-flex; border: 1px solid var(--grey-line); border-radius: 3px; overflow: hidden; }
+    .toggle button { border: none; background: white; padding: 5px 10px; font-size: var(--fs-xxs); font-weight: 900; cursor: pointer; color: var(--text-mid); }
+    .toggle button.active { background: var(--blue-main); color: white; }
+
+    .scrollbox { max-height: 240px; overflow: auto; }
+    .scrollbox.lg { max-height: 310px; }
+
+    /* SIDE PANEL (mock) */
+    .side-panel { position: fixed; top: 0; right: -420px; width: 420px; height: 100vh; background: white; box-shadow: -4px 0 20px rgba(0,0,0,.18); transition: right .35s ease; z-index: 999; display: flex; flex-direction: column; }
+    .side-panel.open { right: 0; }
+    .sp-hdr { background: var(--blue-mid); color: white; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .sp-title { font-size: var(--fs-lg); font-weight: 900; }
+    .sp-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; }
+    .sp-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .sp-sec-title { font-size: var(--fs-xxs); font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid #e8eaf0; padding-bottom: 4px; margin-bottom: 6px; }
+    .sp-info { background: var(--grey-panel); border-left: 3px solid var(--blue-main); border-radius: 3px; padding: 8px 10px; }
+    .sp-big { font-size: 26px; font-weight: 900; }
+    .sp-row { font-size: var(--fs-xs); color: var(--text-mid); line-height: 1.4; }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f0f2f5; }
+    ::-webkit-scrollbar-thumb { background: #c0c6d4; border-radius: 3px; }
+    /* ─── SUB ITENS ─── */
+    .si-nav { padding: 4px 10px; border: 1px solid var(--grey-line); border-radius: 3px; font-size: var(--fs-xxs); font-weight: 900; cursor: pointer; background: white; color: var(--text-mid); transition: .15s; }
+    .si-nav:hover { background: var(--blue-main); color: white; border-color: var(--blue-main); }
+    .si-nav.active { background: var(--blue-main); color: white; border-color: var(--blue-main); }
+    .si-bloco { display: none; }
+    .si-bloco.active { display: block; }
+    .si-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .si-tbl-wrap { }
+    .si-tbl-title { font-size: var(--fs-xxs); font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; padding-bottom: 4px; border-bottom: 1px solid #e8eaf0; }
+    .si-delta-row td { background: #f8fafc; font-weight: 900; font-size: var(--fs-xxs); }
+    .si-unico-aviso { background: #eff6ff; border-left: 3px solid var(--blue-main); border-radius: 3px; padding: 7px 10px; font-size: var(--fs-xs); color: #1e3a6b; margin-bottom: 4px; }
+    .badge-bloco { display: inline-block; padding: 1px 7px; border-radius: 9px; font-size: var(--fs-xxs); font-weight: 900; margin-left: 6px; }
+    .bloco-inv  { background: #dbeafe; color: #1e40af; }
+    .bloco-fin  { background: #cffafe; color: #155e75; }
+    .bloco-serv { background: #d1fae5; color: #065f46; }
+    .bloco-rent { background: #fef3c7; color: #78350f; }
+    .bloco-soc  { background: #ede9fe; color: #4c1d95; }
+  </style>
+</head>
+<body>
+
+  <header class="hdr">
+    <div class="hdr-top">
+      <div class="logo-wrap">
+        <div class="logo-icon">👥</div>
+        <div>
+          <div class="logo-txt">CRMCAIXA</div>
+        </div>
+      </div>
+      <div class="hdr-mid">
+        <div class="hdr-title">GEEGO — Relacionamento Clientes Carteira GOV (IRC)</div>
+      </div>
+    </div>
+    <div class="hdr-tabs">
+      <div class="ver-tag">Mockup para especificacao (Power BI)</div>
+      <div class="tabs-right">
+        <button class="tab active" onclick="switchTab('gerencial', this)">Gerencial</button>
+        <button class="tab" onclick="switchTab('analise', this)">Analise Faixa</button>
+        <button class="tab" onclick="switchTab('detalhadoEntes', this)">Entes e Unidades</button>
+        <button class="tab" onclick="switchTab('produtosServicos', this)">Produtos/Servicos</button>
+        <button class="tab" onclick="switchTab('subitens', this)">Sub Produtos/Servicos</button>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <aside class="sidebar">
+      <div class="sb-hdr">FILTROS</div>
+
+      <div class="sb-group">
+        <span class="sb-label">Periodo (Inicio / Fim)</span>
+        <div class="sb-date-row">
+          <select class="sb-select">
+            <option>dez/25</option><option selected>abr/26</option><option>mai/26</option>
+          </select>
+          <select class="sb-select">
+            <option>jan/26</option><option>abr/26</option><option selected>mai/26</option>
+          </select>
+        </div>
+        <div class="sb-hint">A variacao (Δ) compara o mes fim com o mes inicio.</div>
+      </div>
+
+      <div class="sb-group">
+        <span class="sb-label">Regiao</span>
+        <select class="sb-select"><option selected>Todos</option><option>Norte</option><option>Nordeste</option><option>Centro-Oeste</option><option>Sudeste</option><option>Sul</option></select>
+      </div>
+
+      <div class="sb-group">
+        <span class="sb-label">UF (Estado)</span>
+        <select class="sb-select"><option selected>Todos</option><option>SP</option><option>MG</option><option>BA</option><option>PE</option></select>
+      </div>
+
+      <div class="sb-group">
+        <span class="sb-label">GIGOV / SEG / SEV</span>
+        <select class="sb-select"><option selected>Todos</option><option>GIGOV 1</option><option>GIGOV 2</option></select>
+        <div style="height:4px"></div>
+        <select class="sb-select"><option selected>Todos</option><option>SEG A</option><option>SEG B</option></select>
+        <div style="height:4px"></div>
+        <select class="sb-select"><option selected>Todos</option><option>SEV A</option><option>SEV B</option></select>
+      </div>
+
+      <div class="sb-group">
+        <span class="sb-label">Unidade / Agencia</span>
+        <select class="sb-select"><option selected>Todos</option><option>Ag. 001</option><option>Ag. 002</option></select>
+      </div>
+
+      <div class="sb-group">
+        <span class="sb-label">Segmento</span>
+        <select class="sb-select"><option selected>Todos</option><option>Municipios I</option><option>Municipios II</option><option>Municipios III</option><option>Estados</option></select>
+      </div>
+
+      <div class="sb-group">
+        <span class="sb-label">Faixa</span>
+        <select class="sb-select"><option selected>Todos</option><option>Fidelizado</option><option>Em Rentabilizacao</option><option>Em Diversificacao</option><option>Em Desenvolvimento</option><option>Em Prospeccao</option></select>
+        <div class="sb-hint">As faixas sao niveis de relacionamento. O painel sempre mostra qtd e % em cada faixa.</div>
+      </div>
+
+      <div class="sb-btns">
+        <button class="sb-btn sb-btn-clear" title="Mockup: limpar selecoes">Limpar</button>
+        <button class="sb-btn sb-btn-apply" title="Mockup: aplicar selecoes">Aplicar</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <!-- GERENCIAL -->
+      <div id="panel-gerencial" class="panel active">
+        <div class="kpi-row"  style="grid-template-columns:repeat(5,1fr)">
+           <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">
+              Pontuação 
+              <span class="help dark" title="Media do IRC (0 a 100) do recorte selecionado.">i</span>
+            </div>
+            <div class="kpi-val">9.785 <span class="tiny muted" style="font-weight:900">/ pontuação acumulada do ano</span></div>
+            <div class="kpi-chg pos">▲ +1.162 pts (10,2%) (fim vs inicio)</div>
+            <div class="kpi-sub">Periodo: abr/26 → mai/26</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">
+              IRC medio (0–100)
+              <span class="help dark" title="Media do IRC (0 a 100) do recorte selecionado.">i</span>
+            </div>
+            <div class="kpi-val">62,4</div>
+            <div class="kpi-chg pos">▲ +1,2 pts (fim vs inicio)</div>
+            <div class="kpi-sub">Periodo: abr/26 → mai/26</div>
+          </div>
+          <div class="kpi" style="border-left-color:#7f8c8d">
+            <div class="kpi-lbl">
+              Total de entes
+              <span class="help dark" title="Universo fixo (Estados + Municipios). Dentro do recorte, o total nao muda: muda a distribuicao e a nota.">i</span>
+            </div>
+            <div class="kpi-val">5.569</div>
+            <div class="kpi-chg neu">Universo fixo</div>
+            <div class="kpi-sub">Mostra o total do recorte atual</div>
+          </div>
+           
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">
+              Topo (Fidel + Em Divers.)
+              <span class="help dark" title="Percentual de entes nas faixas de topo. Serve como termometro rapido de qualidade do relacionamento.">i</span>
+            </div>
+            <div class="kpi-val">49,7% <span class="tiny muted" style="font-weight:900"> participação em % no total</span></div>
+            <div class="kpi-chg pos">▲ +0,8 p.p.</div>
+            <div class="kpi-sub">Meta sugerida: crescer mes a mes</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--red)">
+            <div class="kpi-lbl">
+              Base/Alerta (Desenv + Prosp.)
+              <span class="help dark" title="Percentual de entes nas faixas de base. Alto valor aqui indica risco (precisa plano de evolucao).">i</span>
+            </div>
+            <div class="kpi-val">34,0%</div>
+            <div class="kpi-chg neg">▼ −0,6 p.p.</div>
+            <div class="kpi-sub">Quanto menor, melhor</div>
+          </div>
+        </div>
+
+        <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">
+              Taxa de mobilidade
+              <span class="help dark" title="Percentual de entes que mudaram de faixa (subiram + cairam) no periodo selecionado.">i</span>
+            </div>
+            <div class="kpi-val">12,9%</div>
+            <div class="kpi-chg neu">716 entes mudaram de faixa</div>
+            <div class="kpi-sub">Use para medir volatilidade do indicador</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--amber)">
+            <div class="kpi-lbl">
+              IRC atual vs meta do mes
+              <span class="help dark" title="Compara o IRC atual do recorte com a meta do mes. Mostra gap em pontos e status (no ritmo/fora do ritmo).">i</span>
+            </div>
+            <div class="kpi-val">1.245 <span class="tiny muted" style="font-weight:900">/ meta 1.511 pts</span></div>
+            <div class="kpi-chg neg">Gap: −266 pts <span class="badge badge-bad" style="margin-left:6px">Fora do ritmo</span></div>
+            <div class="kpi-sub">Meta e valor é referente a data fim</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">
+              Fidelizado vs meta (ano)
+              <span class="help dark" title="Acumulado no ano (YTD) comparado com a meta anual.">i</span>
+            </div>
+            <div class="kpi-val">61 <span class="tiny muted" style="font-weight:900">/ meta 90</span></div>
+            <div class="kpi-chg pos">Gap: +0,3 pts <span class="badge badge-ok" style="margin-left:6px">No ritmo</span></div>
+            <div class="kpi-sub">Indicador da Estrategia GOV</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">
+              IRC YTD vs meta (ano)
+              <span class="help dark" title="Acumulado no ano (YTD) comparado com a meta anual.">i</span>
+            </div>
+            <div class="kpi-val">184.393 <span class="tiny muted" style="font-weight:900">/ meta 179.831 (10%)</span></div>
+            <div class="kpi-chg pos">Gap: 1.803 pts (+0,11%) <span class="badge badge-ok" style="margin-left:6px">No ritmo</span></div>
+            <div class="kpi-sub">Indicador da Estrategia GOV</div>
+          </div>  
+        </div>
+
+        <div class="g3">
+          <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="card">
+            <div class="card-hdr">
+              Distribuicao por Faixa (Qtd / %)
+              <span class="help" title="Mostra como o universo fixo se distribui nas faixas. Compare qtd e % para ver concentracao.">i</span>
+            </div>
+            <div class="card-body">
+              <table class="data-tbl" style="table-layout:fixed">
+                <thead>
+                  <tr>
+                    <th style="width:132px">Faixa</th>
+                    <th style="width:84px">Qtd Inic</th>
+                    <th style="width:84px">Qtd Fim</th>
+                    <th>%</th>
+                    <th style="width:72px">Δ Qtd</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="badge badge-g">Fidelizado</span></td>
+                    <td><strong>982</strong></td>
+                    <td><strong>982</strong></td>
+                    <td><div class="bar-track"><div class="bar-fill bar-f1" style="width:17.6% ;color: #0d1f3c;">17,6%</div></div></td>
+                    <td class="pos"><strong>+0,3</strong></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-g">Em Rentab.</span></td>
+                    <td><strong>1.786</strong></td>
+                    <td><strong>982</strong></td>
+                    <td><div class="bar-track"><div class="bar-fill bar-f2" style="width:32.1% ;color: #0d1f3c;">32,1%</div></div></td>
+                    <td class="pos"><strong>+0,5</strong></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-y">Em Diversif.</span></td>
+                    <td><strong>912</strong></td>
+                    <td><strong>982</strong></td>
+                    <td><div class="bar-track"><div class="bar-fill bar-f3" style="width:16.4% ;color: #0d1f3c;">16,4%</div></div></td>
+                    <td class="neu"><strong>+0,1</strong></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-r">Em Desenv.</span></td>
+                    <td><strong>1.047</strong></td>
+                    <td><strong>982</strong></td>
+                    <td><div class="bar-track"><div class="bar-fill bar-f4" style="width:18.8%;color: #0d1f3c;">18,8%</div></div></td>
+                    <td class="neg"><strong>−0,7</strong></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-b">Em Prosp.</span></td>
+                    <td><strong>842</strong></td>
+                    <td><strong>982</strong></td>
+                    <td><div class="bar-track"><div class="bar-fill bar-f5" style="width:15.1%; color: #0d1f3c;"></strong>15,1%</strong></div></div></td>
+                    <td class="neu"><strong>−0,2</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="tiny" style="margin-top:6px">
+                Dica de leitura: “Qtd” soma sempre 5.569 no recorte. O que muda e a distribuicao e a nota.
+              </div>
+            </div>
+
+          </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="card">
+              <div class="card-hdr">
+                Desempenho por Regiao (IRC - Média)
+                <span class="help" title="Comparacao rapida por regiao. Em Power BI, clicar em uma linha filtra os outros visuais.">i</span>
+              </div>
+              <div class="card-body">
+                <table class="data-tbl">
+                  <thead>
+                      <tr>
+                        <th>Regiao</th>
+                        <th>Média Inic</th>
+                        <th>Média Fim</th>
+                        <th>Δ</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Sudeste</td><td><strong>64,0</strong></td><td><strong>65,0</strong></td><td class="pos"><strong>+1,0</strong></td></tr>
+                    <tr><td>Sul</td><td><strong>63,2</strong></td><td><strong>64,0</strong></td><td class="pos"><strong>+0,7</strong></td></tr>
+                    <tr><td>Centro-Oeste</td><td><strong>62,1</strong></td><td><strong>62,3</strong></td><td class="neu"><strong>+0,2</strong></td></tr>
+                    <tr><td>Nordeste</td><td><strong>61,0</strong></td><td><strong>60,7</strong></td><td class="neg"><strong>−0,3</strong></td></tr>
+                    <tr><td>Norte</td><td><strong>60,4</strong></td><td><strong>59,8</strong></td><td class="neg"><strong>−0,6</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny" style="margin-top:6px">Pergunta: “em qual regiao o IRC esta melhor/pior e como evoluiu?”</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-hdr">
+                Distribuicao por Segmento (% do universo)
+                <span class="help" title="Mostra a composicao do recorte por segmento. Serve para contextualizar leituras e comparar mix.">i</span>
+              </div>
+              <div class="card-body">
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Qtd Inicio</th><th>Qtd Fim</th><th>Δ</th></tr></thead>
+                  <tbody>
+                    <tr><td>Municipios I</td><td><strong>913</strong> (41,6%)</td><td><strong>913</strong> (41,6%)</td><td class="neu"><strong>+0,1</strong></td></tr>
+                    <tr><td>Municipios II</td><td><strong>1.487</strong> (34,0%)</td><td><strong>1.487</strong> (34,0%)</td><td class="pos"><strong>+0,3</strong></td></tr>
+                    <tr><td>Municipios III</td><td><strong>2.435</strong> (24,4%)</td><td><strong>2.435</strong> (24,4%)</td><td class="neg"><strong>−0,4</strong></td></tr>
+                    <tr><td>Estados</td><td><strong>27</strong> (3,0%)</td><td><strong>27</strong> (3,0%)</td><td class="neu"><strong>0,0</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny" style="margin-top:6px">Pergunta: “o recorte esta concentrado em quais segmentos?”</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">
+              Produtos/Servicos — Variacao no Periodo (%)
+              <span class="help" title="Lista completa para enxergar o que melhorou e o que piorou. Em Power BI: ordenar e filtrar por bloco/produto.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox lg">
+                <table class="data-tbl">
+                  <thead><tr><th>Produto/Servico</th><th>Qtd Incio</th><th>Qtd Fim</th><th style="width:78px">Δ%</th></tr></thead>
+                  <tbody>
+                    <tr><td>Marketshare Investimento</td><td>154</td><td>411</td><td class="pos"><strong>+28,56%</strong></td></tr>
+                    <tr><td>Programa Regional de Beneficio Social</td><td>154</td><td>654</td><td class="pos"><strong>+20,65%</strong></td></tr>
+                    <tr><td>Indicador de Negocios Governo (ING)</td><td>154</td><td>654</td><td class="pos"><strong>+17,92%</strong></td></tr>
+                    <tr><td>Marketshare Financiamento</td><td>154</td><td>654</td><td class="pos"><strong>+16,54%</strong></td></tr>
+                    <tr><td>Selo Gestao Sustentavel</td><td>154</td><td>654</td><td class="pos"><strong>+15,16%</strong></td></tr>
+                    <tr><td>Transferencias Especiais</td><td>154</td><td>654</td><td class="pos"><strong>+5,51%</strong></td></tr>
+                    <tr><td>Folha de Pagamento</td><td>154</td><td>654</td><td class="pos"><strong>+4,62%</strong></td></tr>
+                    <tr><td>Centralizacao Financeira</td><td>154</td><td>654</td><td class="pos"><strong>+1,92%</strong></td></tr>
+                    <tr><td>Convenio Consignado</td><td>154</td><td>654</td><td class="pos"><strong>+0,64%</strong></td></tr>
+                    <tr><td>FINISA Verde e Transferencia Digital</td><td>154</td><td>654</td><td class="neu"><strong>0,00%</strong></td></tr>
+                    <tr><td>Arrecadacao & Cobranca</td><td>154</td><td>654</td><td class="neg"><strong>−0,59%</strong></td></tr>
+                    <tr><td>Receita de Prestacao de Servicos (RPS)</td><td>154</td><td>654</td><td class="neg"><strong>−1,06%</strong></td></tr>
+                    <tr><td>QUOTA Salario Educacao</td><td>154</td><td>654</td><td class="neg"><strong>−2,06%</strong></td></tr>
+                    <tr><td>FAF Saude</td><td>154</td><td>654</td><td class="neg"><strong>−4,40%</strong></td></tr>
+                    <tr><td>Pagamento a Fornecedor</td><td>154</td><td>654</td><td class="neg"><strong>−7,85%</strong></td></tr>
+                    <tr><td>FUNDES</td><td>154</td><td>654</td><td class="neg"><strong>−12,14%</strong></td></tr>
+                    <tr><td>Servico de Assessoramento Tecnico</td><td>154</td><td>654</td><td class="neg"><strong>−35,97%</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Em Power BI: permitir ordenar por Δ% e filtrar por bloco/tipo de cliente.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="g2">
+          <div class="card">
+            <div class="card-hdr">
+              Consumo de Produtos/Servicos por Faixa
+              <span class="help" title="Mostra, por faixa, quantos produtos/servicos (em media) os entes possuem/aderiram. Ajuda a entender o 'consumo' por nivel.">i</span>
+            </div>
+            <div class="card-body">
+              <table class="data-tbl">
+                <thead>
+                  <tr>
+                    <th>Segmento</th>
+                    <th style="width:50px">Qtd entes Final</th>
+                    <th style="width:120px">Media prod/serv</th>
+                    <th style="width:110px">% com >5</th>
+                    <th style="width:120px">% entre 5 a 9</th>
+                    <th style="width:120px">% entre 10 a 14</th>
+                    <th style="width:120px">% com 15+</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Minicipio I</td>
+                    <td><strong>982</strong></td>
+                    <td><strong>8,2</strong></td>
+                    <td class="pos"><strong>1%</strong></td>
+                    <td class="pos"><strong>92%</strong></td>
+                    <td class="pos"><strong>92%</strong></td>
+                    <td class="pos"><strong>92%</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Minicipio II</td>
+                    <td><strong>1.786</strong></td>
+                    <td><strong>6,4</strong></td>
+                    <td class="neu"><strong>6%</strong></td>
+                    <td class="pos"><strong>71%</strong></td>
+                    <td class="neu"><strong>6%</strong></td>
+                    <td class="pos"><strong>71%</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Minicipio III</td>
+                    <td><strong>912</strong></td>
+                    <td><strong>4,8</strong></td>
+                    <td class="neu"><strong>14%</strong></td>
+                    <td class="neu"><strong>48%</strong></td>
+                    <td class="neu"><strong>14%</strong></td>
+                    <td class="neu"><strong>48%</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Estados</td>
+                    <td><strong>1.047</strong></td>
+                    <td><strong>3,1</strong></td>
+                    <td class="neg"><strong>28%</strong></td>
+                    <td class="neg"><strong>19%</strong></td>
+                    <td class="neg"><strong>28%</strong></td>
+                    <td class="neg"><strong>19%</strong></td>
+                  </tr>
+                  
+                </tbody>
+              </table>
+              <div class="tiny" style="margin-top:6px">
+                Leitura: faixas mais altas tendem a ter maior diversidade de produtos/servicos. O objetivo e reduzir “% com 0” e aumentar “% com 5+”.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">
+              Produtos/Servicos Mais Presentes (no recorte)
+              <span class="help" title="Um resumo gerencial do mix: quais produtos/servicos aparecem com mais frequencia no recorte (nao e variacao).">i</span>
+            </div>
+            <div class="card-body">
+              <table class="data-tbl">
+                <thead><tr><th>Produto/Servico</th><th style="width:88px">% entes</th></tr></thead>
+                <tbody>
+                  <tr><td>Arrecadacao & Cobranca</td><td><strong>78%</strong></td></tr>
+                  <tr><td>Centralizacao Financeira</td><td><strong>73%</strong></td></tr>
+                  <tr><td>Convenio Consignado</td><td><strong>69%</strong></td></tr>
+                  <tr><td>RPS — Rec. Prest. Servicos</td><td><strong>62%</strong></td></tr>
+                  <tr><td>ING — Ind. Neg. Governo</td><td><strong>58%</strong></td></tr>
+                  <tr><td>Marketshare Investimento</td><td><strong>41%</strong></td></tr>
+                </tbody>
+              </table>
+              <div class="tiny" style="margin-top:6px">Em Power BI: clicar em um item filtra consumo por faixa e variacao do produto.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALISE -->
+      <div id="panel-analise" class="panel">
+        <div class="kpi-row">
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">Subiram de faixa <span class="help dark" title="Qtd de entes que mudaram para uma faixa superior no periodo.">i</span></div>
+            <div class="kpi-val" style="color:var(--green)">334</div>
+            <div class="kpi-chg pos">6,0% do universo</div>
+            <div class="kpi-sub">Fim vs inicio</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--red)">
+            <div class="kpi-lbl">Cairam de faixa <span class="help dark" title="Qtd de entes que mudaram para uma faixa inferior no periodo.">i</span></div>
+            <div class="kpi-val" style="color:var(--red)">382</div>
+            <div class="kpi-chg neg">6,9% do universo</div>
+            <div class="kpi-sub">Fim vs inicio</div>
+          </div>
+          <div class="kpi" style="border-left-color:#7f8c8d">
+            <div class="kpi-lbl">Estaticos <span class="help dark" title="Entes que permaneceram na mesma faixa. A nota pode variar, mas a faixa nao.">i</span></div>
+            <div class="kpi-val">4.853</div>
+            <div class="kpi-chg neu">87,1% permaneceram</div>
+            <div class="kpi-sub">Universo fixo: 5.569</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">Taxa de mobilidade <span class="help dark" title="Percentual de entes que mudaram de faixa (subiram + cairam).">i</span></div>
+            <div class="kpi-val">12,9%</div>
+            <div class="kpi-chg neu">716 mudaram de faixa</div>
+            <div class="kpi-sub">Serve para medir volatilidade</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr">
+            Movimentacao por Faixa (Inicio → Fim)
+            <span class="help" title="Tabela principal da Analise. Clicar em uma faixa abre os fluxos (de onde veio / para onde foi).">i</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="data-tbl" id="mov-tbl">
+              <thead>
+                <tr>
+                  <th>Faixa</th><th>Qtd (Ini)</th><th>Qtd (Fim)</th><th>Entraram</th><th>Sairam</th><th>Saldo</th><th>Permanec.</th><th>% Retencao</th><th>Δ IRC medio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="toggleDetail('d-fidel')">
+                  <td><strong>Fidelizado</strong></td><td>965</td><td>982</td>
+                  <td><span class="badge badge-g">145</span></td><td><span class="badge badge-r">128</span></td>
+                  <td><span class="badge badge-g">+17</span></td><td>837</td><td>86,7%</td><td class="pos"><strong>+0,4</strong></td>
+                </tr>
+                <tr id="d-fidel" style="display:none;background:#f8fafc">
+                  <td colspan="9" style="white-space:normal">
+                    <div style="padding:8px 10px;font-size:var(--fs-xs);color:var(--text-mid);line-height:1.35">
+                      <strong>Fluxos (exemplo):</strong> Entradas vieram principalmente de Rentabilizacao (61%) e Diversificacao (23%). Saidas foram para Rentabilizacao (62%) e Diversificacao (26%).
+                    </div>
+                  </td>
+                </tr>
+
+                <tr onclick="toggleDetail('d-rent')">
+                  <td><strong>Em Rentabilizacao</strong></td><td>1.760</td><td>1.786</td>
+                  <td><span class="badge badge-g">289</span></td><td><span class="badge badge-r">263</span></td>
+                  <td><span class="badge badge-g">+26</span></td><td>1.497</td><td>85,1%</td><td class="pos"><strong>+0,3</strong></td>
+                </tr>
+                <tr id="d-rent" style="display:none;background:#f8fafc">
+                  <td colspan="9" style="white-space:normal">
+                    <div style="padding:8px 10px;font-size:var(--fs-xs);color:var(--text-mid);line-height:1.35">
+                      <strong>Fluxos (exemplo):</strong> Entradas: de Diversificacao e de Prospeccao. Saidas: subiram para Fidelizado e parte regrediu para Diversificacao.
+                    </div>
+                  </td>
+                </tr>
+
+                <tr onclick="toggleDetail('d-div')">
+                  <td><strong>Em Diversificacao</strong></td><td>930</td><td>912</td>
+                  <td><span class="badge badge-g">178</span></td><td><span class="badge badge-r">196</span></td>
+                  <td><span class="badge badge-r">−18</span></td><td>734</td><td>78,9%</td><td class="neu"><strong>+0,0</strong></td>
+                </tr>
+                <tr id="d-div" style="display:none;background:#f8fafc">
+                  <td colspan="9" style="white-space:normal">
+                    <div style="padding:8px 10px;font-size:var(--fs-xs);color:var(--text-mid);line-height:1.35">
+                      <strong>Observacao:</strong> olhar gargalos de evolucao para Rentabilizacao (ex.: produtos-chave nao aderidos).
+                    </div>
+                  </td>
+                </tr>
+
+                <tr onclick="toggleDetail('d-des')">
+                  <td><strong>Em Desenvolvimento</strong></td><td>1.114</td><td>1.047</td>
+                  <td><span class="badge badge-g">198</span></td><td><span class="badge badge-r">265</span></td>
+                  <td><span class="badge badge-r">−67</span></td><td>849</td><td>76,2%</td><td class="neg"><strong>−0,5</strong></td>
+                </tr>
+                <tr id="d-des" style="display:none;background:#fef8f8">
+                  <td colspan="9" style="white-space:normal">
+                    <div style="padding:8px 10px;font-size:var(--fs-xs);line-height:1.35">
+                      <span class="neg"><strong>Alerta:</strong></span> queda concentrada para Prospeccao. Recomenda-se ver Drivers (Blocos/Produtos) e lista de entes com maior queda.
+                    </div>
+                  </td>
+                </tr>
+
+                <tr onclick="toggleDetail('d-pro')">
+                  <td><strong>Em Prospeccao</strong></td><td>864</td><td>842</td>
+                  <td><span class="badge badge-r">228</span></td><td><span class="badge badge-g">250</span></td>
+                  <td><span class="badge badge-g">+22</span></td><td>—</td><td>—</td><td class="neu"><strong>+0,1</strong></td>
+                </tr>
+                <tr id="d-pro" style="display:none;background:#f8fafc">
+                  <td colspan="9" style="white-space:normal">
+                    <div style="padding:8px 10px;font-size:var(--fs-xs);color:var(--text-mid);line-height:1.35">
+                      <strong>Leitura:</strong> Prospeccao tende a receber regressao. O foco e acelerar evolucao (para Desenv. e Diversif.) e reduzir tempo parado.
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="tiny" style="padding:8px 10px">
+              Mockup: os numeros sao ilustrativos para demonstrar o layout e a narrativa. No Power BI, todos os totais fecham pelo universo fixo do recorte.
+            </div>
+          </div>
+        </div>
+
+        <div class="g2">
+          <div class="card">
+            <div class="card-hdr">Matriz de Transicao (DE → PARA) <span class="help" title="Heatmap: diagonal = permaneceu; acima = subiu; abaixo = caiu.">i</span></div>
+            <div class="card-body">
+              <table class="data-tbl" style="text-align:center">
+                <thead>
+                  <tr>
+                    <th style="text-align:left">DE / PARA</th><th>Fidel</th><th>Rent</th><th>Divers</th><th>Desenv</th><th>Prosp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td style="text-align:left"><strong>Fidel</strong></td><td class="pos"><strong>840</strong></td><td>80</td><td>30</td><td>10</td><td>5</td></tr>
+                  <tr><td style="text-align:left"><strong>Rent</strong></td><td>90</td><td class="pos"><strong>1500</strong></td><td>120</td><td>30</td><td>20</td></tr>
+                  <tr><td style="text-align:left"><strong>Divers</strong></td><td>35</td><td>110</td><td class="pos"><strong>735</strong></td><td>40</td><td>10</td></tr>
+                  <tr><td style="text-align:left"><strong>Desenv</strong></td><td>15</td><td>50</td><td>60</td><td class="pos"><strong>850</strong></td><td class="neg"><strong>139</strong></td></tr>
+                  <tr><td style="text-align:left"><strong>Prosp</strong></td><td>2</td><td>46</td><td>7</td><td>127</td><td class="pos"><strong>682</strong></td></tr>
+                </tbody>
+              </table>
+              <div class="tiny" style="margin-top:6px">Mockup: em Power BI, a matriz pode ser colorida (verde=permaneceu, azul=subiu, vermelho=caiu).</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hdr">Drivers por Bloco (Macro) <span class="help" title="Quais blocos mais explicam a variacao do IRC no periodo.">i</span></div>
+            <div class="card-body">
+              <table class="data-tbl">
+                <thead><tr><th>Bloco</th><th>Participacao</th><th>Δ</th></tr></thead>
+                <tbody>
+                  <tr><td>Rentabilidade</td><td><div class="bar-track"><div class="bar-fill bar-f2" style="width:33%">33%</div></div></td><td class="pos"><strong>+0,5</strong></td></tr>
+                  <tr><td>Servicos</td><td><div class="bar-track"><div class="bar-fill bar-f3" style="width:31%">31%</div></div></td><td class="neu"><strong>+0,1</strong></td></tr>
+                  <tr><td>Investimento</td><td><div class="bar-track"><div class="bar-fill bar-f1" style="width:26%">26%</div></div></td><td class="pos"><strong>+0,4</strong></td></tr>
+                  <tr><td>Financiamento</td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:10%">10%</div></div></td><td class="neg"><strong>−0,2</strong></td></tr>
+                </tbody>
+              </table>
+              <div class="tiny" style="margin-top:6px">Uso: clicar no bloco filtra a lista de entes e os produtos relacionados.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- detalhadoEntes -->
+      <div id="panel-detalhadoEntes" class="panel">
+
+        <!-- KPIs DE ENTES E UNIDADES -->
+        <div class="kpi-row" style="grid-template-columns:repeat(5,1fr)">
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">Total de entes <span class="help dark" title="Universo fixo de Estados + Municipios no recorte selecionado.">i</span></div>
+            <div class="kpi-val">5.569</div>
+            <div class="kpi-sub">Estados + Municipios</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">Entes que melhoraram <span class="help dark" title="Entes cuja nota IRC subiu no periodo (independente de mudar de faixa).">i</span></div>
+            <div class="kpi-val" style="color:var(--green)">2.184</div>
+            <div class="kpi-chg pos">▲ 39,2% do total</div>
+            <div class="kpi-sub">Nota subiu no periodo</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--red)">
+            <div class="kpi-lbl">Entes que pioraram <span class="help dark" title="Entes cuja nota IRC caiu no periodo.">i</span></div>
+            <div class="kpi-val" style="color:var(--red)">1.502</div>
+            <div class="kpi-chg neg">▼ 27,0% do total</div>
+            <div class="kpi-sub">Nota caiu no periodo</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--amber)">
+            <div class="kpi-lbl">Unidades / Agencias <span class="help dark" title="Quantidade de agencias de relacionamento ativas no recorte.">i</span></div>
+            <div class="kpi-val">147</div>
+            <div class="kpi-sub">Agencias de relacionamento</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">Media produtos/ente <span class="help dark" title="Media de produtos/servicos aderidos por ente no recorte.">i</span></div>
+            <div class="kpi-val">6,4</div>
+            <div class="kpi-chg pos">▲ +0,2 vs inicio</div>
+            <div class="kpi-sub">Diversidade do portfolio</div>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <input class="search-inp" id="search-inp" type="text" placeholder="Buscar ente (municipio/estado/UF)..." />
+            <div class="toggle" role="group" aria-label="Filtro de variacao">
+              <button >Buscar</button>
+            </div>
+        </div>
+        <div class="g4">
+          <div class="card">
+            <div class="card-hdr">
+              Regioes (vRegiao)
+              <span class="help" title="Resumo por regiao no periodo. Em Power BI: clicar em uma regiao filtra entes, agencias e produtos.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox">
+                <table class="data-tbl" id="regioes-tbl">
+                  <thead>
+                    <tr>
+                      <th>Regiao</th><th>Crescimento</th><th>Cresc. nota</th>
+                    </tr>
+                  </thead>
+                  <tbody id="regioes-tbody">
+                    <tr data-var="pos" data-delta="0.18" data-pct="0.18"><td><strong>Sudeste</strong></td><td class="pos"><strong>+0,18%</strong></td><td class="pos"><strong>+18,0</strong></td></tr>
+                    <tr data-var="pos" data-delta="0.14" data-pct="0.14"><td><strong>Centro-Oeste</strong></td><td class="pos"><strong>+0,14%</strong></td><td class="pos"><strong>+21,0</strong></td></tr>
+                    <tr data-var="neg" data-delta="-0.14" data-pct="-0.14"><td><strong>Norte</strong></td><td class="neg"><strong>−0,14%</strong></td><td class="neg"><strong>−11,0</strong></td></tr>
+                    <tr data-var="neg" data-delta="-0.27" data-pct="-0.27"><td><strong>Nordeste</strong></td><td class="neg"><strong>−0,27%</strong></td><td class="neg"><strong>−112,0</strong></td></tr>
+                    <tr data-var="neg" data-delta="-0.51" data-pct="-0.51"><td><strong>Sul</strong></td><td class="neg"><strong>−0,51%</strong></td><td class="neg"><strong>−24,0</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Mockup: campos espelham `vRegiao` (crescimento e crescimento de nota).</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">
+              Agencias de Relacionamento (vAgenciaRelacionamento)
+              <span class="help" title="Analise por agencia. Em Power BI: clicar na agencia filtra os entes, drivers e o restante da pagina.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox lg">
+                <table class="data-tbl" id="agencias-tbl">
+                  <thead>
+                    <tr>
+                      <th>Agencia</th><th>Regiao</th><th>Qtd</th><th>Ini</th><th>Fim</th><th>Δ pts</th><th>Δ%</th>
+                    </tr>
+                  </thead>
+                  <tbody id="agencias-tbody">
+                    <tr data-var="pos" data-delta="1.2" data-pct="2.1">
+                      <td><strong>Ag. 001</strong></td><td>Sudeste</td><td>412</td><td>61,3</td><td>62,5</td><td class="pos"><strong>+1,2</strong></td><td class="pos"><strong>+2,1%</strong></td>
+                    </tr>
+                    <tr data-var="pos" data-delta="0.6" data-pct="1.0">
+                      <td><strong>Ag. 014</strong></td><td>Sul</td><td>238</td><td>62,0</td><td>62,6</td><td class="pos"><strong>+0,6</strong></td><td class="pos"><strong>+1,0%</strong></td>
+                    </tr>
+                    <tr data-var="neg" data-delta="-0.8" data-pct="-1.3">
+                      <td><strong>Ag. 032</strong></td><td>Nordeste</td><td>301</td><td>60,9</td><td>60,1</td><td class="neg"><strong>−0,8</strong></td><td class="neg"><strong>−1,3%</strong></td>
+                    </tr>
+                    <tr data-var="neg" data-delta="-1.4" data-pct="-2.4">
+                      <td><strong>Ag. 077</strong></td><td>Norte</td><td>176</td><td>61,2</td><td>59,8</td><td class="neg"><strong>−1,4</strong></td><td class="neg"><strong>−2,4%</strong></td>
+                    </tr>
+                    <tr data-var="pos" data-delta="0.4" data-pct="0.7"><td><strong>Ag. 102</strong></td><td>Sudeste</td><td>219</td><td>62,7</td><td>63,1</td><td class="pos"><strong>+0,4</strong></td><td class="pos"><strong>+0,7%</strong></td></tr>
+                    <tr data-var="neg" data-delta="-0.5" data-pct="-0.8"><td><strong>Ag. 121</strong></td><td>Centro-Oeste</td><td>188</td><td>61,8</td><td>61,3</td><td class="neg"><strong>−0,5</strong></td><td class="neg"><strong>−0,8%</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Mockup: no Power BI, essa tabela permite enxergar rapidamente quais agencias melhoraram ou pioraram.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">
+              Produtos/Servicos (Variacao no Periodo)
+              <span class="help" title="Lista de produtos com variacao no periodo (Δ). Em Power BI: selecionar um produto filtra agencias e entes impactados.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox lg">
+                <table class="data-tbl" id="prodvar-tbl">
+                  <thead><tr><th>Produto</th><th style="width:84px">Δ%</th></tr></thead>
+                  <tbody id="prodvar-tbody">
+                    <tr data-var="pos" data-delta="4.76" data-pct="4.76"><td>Centralizacao Financeira</td><td class="pos"><strong>+4,76%</strong></td></tr>
+                    <tr data-var="pos" data-delta="0.14" data-pct="0.14"><td>Arrecadacao & Cobranca</td><td class="pos"><strong>+0,14%</strong></td></tr>
+                    <tr data-var="neg" data-delta="-0.13" data-pct="-0.13"><td>PAG. a Fornecedor</td><td class="neg"><strong>−0,13%</strong></td></tr>
+                    <tr data-var="neu" data-delta="0.0" data-pct="0.0"><td>FINISA Verde e Transf. Digital</td><td class="neu"><strong>0,00%</strong></td></tr>
+                    <tr data-var="neu" data-delta="0.0" data-pct="0.0"><td>Folha de Pagamento</td><td class="neu"><strong>0,00%</strong></td></tr>
+                    <tr data-var="neu" data-delta="0.0" data-pct="0.0"><td>Fundos RPPS</td><td class="neu"><strong>0,00%</strong></td></tr>
+                    <tr data-var="neg" data-delta="-1.98" data-pct="-1.98"><td>Rec. Prest. Servicos (RPS)</td><td class="neg"><strong>−1,98%</strong></td></tr>
+                    <tr data-var="neg" data-delta="-2.06" data-pct="-2.06"><td>QUOTA Salario Educacao</td><td class="neg"><strong>−2,06%</strong></td></tr>
+                    <tr data-var="neg" data-delta="-4.40" data-pct="-4.40"><td>FAF Saude</td><td class="neg"><strong>−4,40%</strong></td></tr>
+                    <tr data-var="neg" data-delta="-12.14" data-pct="-12.14"><td>FUNDEB</td><td class="neg"><strong>−12,14%</strong></td></tr>
+                    <tr data-var="neg" data-delta="-35.97" data-pct="-35.97"><td>Serv. Assessoramento Tecnico</td><td class="neg"><strong>−35,97%</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Mockup: esta lista pode virar grafico de barras horizontais + tabela.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">Produtos/Servicos (Drivers) <span class="help" title="Quais produtos/servicos estao mais associados a melhora/piora no periodo.">i</span></div>
+            <div class="card-body">
+              <table class="data-tbl">
+                <thead><tr><th>Produto/Subgrupo</th><th>Entes impact.</th><th>Δ medio</th></tr></thead>
+                <tbody>
+                  <tr><td>ING — Indicador de Negocios Gov.</td><td><strong>1.914</strong></td><td class="pos"><strong>+0,3</strong></td></tr>
+                  <tr><td>Marketshare Investimento</td><td><strong>1.322</strong></td><td class="pos"><strong>+0,5</strong></td></tr>
+                  <tr><td>Centralizacao Financeira</td><td><strong>894</strong></td><td class="pos"><strong>+0,2</strong></td></tr>
+                  <tr><td>Servico de Assessoramento Tecnico</td><td><strong>312</strong></td><td class="neg"><strong>−0,6</strong></td></tr>
+                  <tr><td>Pag. a Fornecedor</td><td><strong>228</strong></td><td class="neg"><strong>−0,4</strong></td></tr>
+                </tbody>
+              </table>
+              <div class="tiny" style="margin-top:6px">No Power BI: clicar em um produto filtra os entes (acima) e o painel lateral do ente (quando aberto).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="g2">
+          <div class="card">
+            <div class="card-hdr">
+              Tabela de Entes (Exploracao)
+              <span class="help" title="Base para investigacao: filtrar, ordenar e abrir o detalhe do ente.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox lg">
+                <table class="data-tbl" id="entes-tbl">
+                  <thead>
+                    <tr>
+                      <th>Ente</th><th>UF</th><th>Segmento</th><th>Faixa (Ini→Fim)</th><th>Ini</th><th>Fim</th><th>Δ pts</th><th>Δ%</th>
+                    </tr>
+                  </thead>
+                  <tbody id="entes-tbody">
+                    <tr data-var="pos" data-delta="8" data-pct="13.8" onclick="openPanel('Municipio de Currais, PI')">
+                      <td>Mun. de Currais</td><td>PI</td><td>Municipios II</td><td>Rentab. → <span class="badge badge-g">Fidelizado</span></td><td>58</td><td>66</td><td class="pos"><strong>+8</strong></td><td class="pos"><strong>+13,8%</strong></td>
+                    </tr>
+                    <tr data-var="pos" data-delta="8" data-pct="14.3" onclick="openPanel('Municipio de Sao Domingos, GO')">
+                      <td>Mun. de Sao Domingos</td><td>GO</td><td>Municipios I</td><td>Desenv. → <span class="badge badge-g">Rentab.</span></td><td>56</td><td>64</td><td class="pos"><strong>+8</strong></td><td class="pos"><strong>+14,3%</strong></td>
+                    </tr>
+                    <tr data-var="pos" data-delta="5" data-pct="8.5" onclick="openPanel('Conceicao de Linhares, ES')">
+                      <td>Conceicao de Linhares</td><td>ES</td><td>Municipios II</td><td>Rentab. → <span class="badge badge-g">Fidelizado</span></td><td>59</td><td>64</td><td class="pos"><strong>+5</strong></td><td class="pos"><strong>+8,5%</strong></td>
+                    </tr>
+                    <tr data-var="neg" data-delta="-5" data-pct="-7.6" onclick="openPanel('Santa Rita, PB')">
+                      <td>Santa Rita</td><td>PB</td><td>Municipios III</td><td><span class="badge badge-g">Fidelizado</span> → Rentab.</td><td>66</td><td>61</td><td class="neg"><strong>−5</strong></td><td class="neg"><strong>−7,6%</strong></td>
+                    </tr>
+                    <tr data-var="neg" data-delta="-5" data-pct="-7.9" onclick="openPanel('Belo Oriente, MG')">
+                      <td>Belo Oriente</td><td>MG</td><td>Municipios II</td><td>Rentab. → <span class="badge badge-r">Desenv.</span></td><td>63</td><td>58</td><td class="neg"><strong>−5</strong></td><td class="neg"><strong>−7,9%</strong></td>
+                    </tr>
+                    <tr data-var="neg" data-delta="-3" data-pct="-4.7" onclick="openPanel('Pedreiras, MA')">
+                      <td>Pedreiras</td><td>MA</td><td>Municipios II</td><td>Diversif. → <span class="badge badge-r">Desenv.</span></td><td>64</td><td>61</td><td class="neg"><strong>−3</strong></td><td class="neg"><strong>−4,7%</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Mockup: no Power BI, essa tabela vira o principal ponto de drillthrough para o “Detalhe do Ente”.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">Visual de Apoio (ex.: distribuicao por faixa / impacto) <span class="help" title="Espaco para um visual complementar do detalhado: distribuicao, comparacao por faixa ou ranking.">i</span></div>
+            <div class="card-body">
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px">
+
+                <div style="border:1px solid #e8eaf0;border-radius:4px;padding:3px;background:#fbfcff">
+                  <div class="tiny muted" style="font-weight:900;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+                    Variacao por Faixa (Δ pts)
+                    <span class="help dark" title="Mostra, em pontos de IRC, quais faixas melhoraram/pioraram mais no periodo. Em Power BI: clicar em uma faixa filtra entes e agencias.">i</span>
+                  </div>
+                  <table class="data-tbl" style="background:white;border:1px solid #eef0f4;border-radius:4px;overflow:hidden">
+                    <thead><tr><th>Faixa</th><th style="width:70px">Δ pts</th></tr></thead>
+                    <tbody>
+                      <tr><td>Fidelizado</td><td class="pos"><strong>+0,3</strong></td></tr>
+                      <tr><td>Em Rentab.</td><td class="pos"><strong>+0,5</strong></td></tr>
+                      <tr><td>Em Diversif.</td><td class="neu"><strong>+0,1</strong></td></tr>
+                      <tr><td>Em Desenv.</td><td class="neg"><strong>−0,7</strong></td></tr>
+                      <tr><td>Em Prosp.</td><td class="neg"><strong>−0,2</strong></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div style="border:1px solid #e8eaf0;border-radius:4px;padding:3px;background:#fbfcff">
+                  <div class="tiny muted" style="font-weight:900;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+                    Variacao por Bloco (Δ pts)
+                    <span class="help dark" title="Mostra quais blocos puxaram a variacao (positiva ou negativa). Em Power BI: clicar em um bloco filtra produtos e entes impactados.">i</span>
+                  </div>
+                  <table class="data-tbl" style="background:white;border:1px solid #eef0f4;border-radius:4px;overflow:hidden">
+                    <thead><tr><th>Bloco</th><th style="width:70px">Δ pts</th></tr></thead>
+                    <tbody>
+                      <tr><td>Rentabilidade</td><td class="pos"><strong>+0,5</strong></td></tr>
+                      <tr><td>Investimento</td><td class="pos"><strong>+0,4</strong></td></tr>
+                      <tr><td>Servicos</td><td class="neu"><strong>+0,1</strong></td></tr>
+                      <tr><td>Financiamento</td><td class="neg"><strong>−0,2</strong></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div style="border:1px solid #e8eaf0;border-radius:4px;padding:3px;background:#fbfcff">
+                  <div class="tiny muted" style="font-weight:900;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+                    Variacao por Segmento (Δ pts)
+                    <span class="help dark" title="Mostra quais blocos puxaram a variacao (positiva ou negativa). Em Power BI: clicar em um bloco filtra produtos e entes impactados.">i</span>
+                  </div>
+                  <table class="data-tbl" style="background:white;border:1px solid #eef0f4;border-radius:4px;overflow:hidden">
+                    <thead><tr><th>Segmento</th><th style="width:70px">Δ pts</th></tr></thead>
+                    <tbody>
+                      <tr><td>Estado</td><td class="pos"><strong>+0,5</strong></td></tr>
+                      <tr><td>Município I</td><td class="pos"><strong>+0,4</strong></td></tr>
+                      <tr><td>Município II</td><td class="neu"><strong>+0,1</strong></td></tr>
+                      <tr><td>Município III</td><td class="neg"><strong>−0,2</strong></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="tiny" style="margin-top:6px">
+                Layout sugerido no Power BI: 2 visuais pequenos (Faixa e Bloco) para leitura rapida antes de descer para as tabelas.
+              </div>
+            </div>
+          </div>
+        </div> 
+      </div> 
+
+      <!-- produtosServicos -->
+      <div id="panel-produtosServicos" class="panel">
+
+        <!-- KPIs DE PRODUTOS/SERVIÇOS -->
+        <div class="kpi-row" style="grid-template-columns:repeat(5,1fr)">
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">Produtos ativos <span class="help dark" title="Quantidade de produtos/servicos do catalogo IRC monitorados no painel.">i</span></div>
+            <div class="kpi-val">18</div>
+            <div class="kpi-sub">Catalogo IRC completo</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">Produtos em alta <span class="help dark" title="Quantidade de produtos com variacao positiva (Δ%) no periodo.">i</span></div>
+            <div class="kpi-val" style="color:var(--green)">9</div>
+            <div class="kpi-chg pos">▲ 50% do catalogo</div>
+            <div class="kpi-sub">Δ% positivo no periodo</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--red)">
+            <div class="kpi-lbl">Produtos em queda <span class="help dark" title="Quantidade de produtos com variacao negativa (Δ%) no periodo.">i</span></div>
+            <div class="kpi-val" style="color:var(--red)">7</div>
+            <div class="kpi-chg neg">▼ 39% do catalogo</div>
+            <div class="kpi-sub">Requer atencao/plano</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--amber)">
+            <div class="kpi-lbl">Maior driver positivo <span class="help dark" title="Produto que mais contribuiu para o crescimento da nota no periodo.">i</span></div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.25">Mktshare<br>Investimento</div>
+            <div class="kpi-chg pos">▲ +28,56%</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--red)">
+            <div class="kpi-lbl">Maior driver negativo <span class="help dark" title="Produto que mais puxou a nota para baixo no periodo.">i</span></div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.25">Serv. Assess.<br>Tecnico</div>
+            <div class="kpi-chg neg">▼ −35,97%</div>
+          </div>
+        </div>
+
+        <!-- segunda linha de KPIs -->
+        <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">Produto mais presente <span class="help dark" title="Produto/servico com maior % de entes aderentes no recorte.">i</span></div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.25">Arrecadação<br>& Cobrança</div>
+            <div class="kpi-chg pos">78% dos entes</div>
+          </div>
+          <div class="kpi" style="border-left-color:#7f8c8d">
+            <div class="kpi-lbl">Produto menos presente <span class="help dark" title="Produto/servico com menor % de entes aderentes no recorte.">i</span></div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.25">FINISA Verde<br>e Transf. Dig.</div>
+            <div class="kpi-chg neg">0,8% dos entes</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">Maior peso na nota <span class="help dark" title="Produto que mais contribui em pontos para a nota IRC total (soma de notas).">i</span></div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.25">ING — Ind.<br>Neg. Governo</div>
+            <div class="kpi-chg pos">31.733 pts (17,2%)</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">Soma total de notas <span class="help dark" title="Soma de todas as notas de produtos no recorte (base do IRC).">i</span></div>
+            <div class="kpi-val">184.294</div>
+            <div class="kpi-chg neu">Δ 0 no periodo</div>
+            <div class="kpi-sub">Total acumulado de pontos</div>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <input class="search-inp" id="search-inp" type="text" placeholder="Buscar produto/servico ou subgrupo..." />
+          <div class="tiny muted" style="font-weight:900">Variacao</div>
+          <div class="toggle" role="group" aria-label="Filtro de variacao">
+            <button class="active" onclick="setVarFilter('all', this)">Todas</button>
+            <button onclick="setVarFilter('pos', this)">Positiva</button>
+            <button onclick="setVarFilter('neg', this)">Negativa</button>
+          </div>
+          <div class="tiny muted" style="font-weight:900;margin-left:4px">Ordenar</div>
+          <div class="toggle" role="group" aria-label="Ordenacao">
+            <button class="active" onclick="setOrder('delta', this)">Δ pts</button>
+            <button onclick="setOrder('pct', this)">Δ%</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr">
+            Produtos/Servicos — Drivers por Grupo (Tabela Completa)
+            <span class="help" title="Tabela detalhada para analise profunda de quais produtos/subgrupos explicam a diferenca entre inicio e fim (quantidade, media e soma).">i</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="scrollbox lg" style="overflow:auto">
+              <table class="data-tbl" style="min-width:1120px;table-layout:fixed">
+                <thead>
+                  <tr>
+                    <th style="width:220px">Nome SubGrupo</th>
+                    <th style="width:70px">Qtd Ents</th>
+                    <th style="width:90px">% Diferent</th>
+                    <th style="width:80px">Qtd Subire</th>
+                    <th style="width:80px">Qtd Perde</th>
+                    <th style="width:110px">Media Nota Base</th>
+                    <th style="width:90px">Media Nota</th>
+                    <th style="width:140px">Soma Notas (Inicio)</th>
+                    <th style="width:130px">Soma Notas (Fim)</th>
+                    <th style="width:150px">Diferenca (Ini→Fim)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>FUNDEB</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0,0</td><td>0,0</td><td>35</td><td>35</td><td>0</td></tr>
+                  <tr><td><strong>FAF Saude</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>2,2</td><td>2,2</td><td>12101</td><td>12101</td><td>0</td></tr>
+                  <tr><td><strong>QUOTA Salario Educacao</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>1,1</td><td>1,1</td><td>6288</td><td>6288</td><td>0</td></tr>
+                  <tr><td><strong>Transferencias Especiais</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>1,0</td><td>1,0</td><td>5327</td><td>5327</td><td>0</td></tr>
+                  <tr><td><strong>Marketshare Investimento</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>3,5</td><td>3,5</td><td>19855</td><td>19855</td><td>0</td></tr>
+                  <tr><td><strong>Fundos RPPS</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0,8</td><td>0,8</td><td>4596</td><td>4596</td><td>0</td></tr>
+                  <tr><td><strong>Marketshare Financiamento</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>2,7</td><td>2,7</td><td>14985</td><td>14985</td><td>0</td></tr>
+                  <tr><td><strong>Folha de Pagamento</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>1,1</td><td>1,1</td><td>6268</td><td>6268</td><td>0</td></tr>
+                  <tr><td><strong>Convenio Consignado</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>4,0</td><td>4,0</td><td>22195</td><td>22195</td><td>0</td></tr>
+                  <tr><td><strong>Arrecadacao &amp; Cobranca</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>3,0</td><td>3,0</td><td>16833</td><td>16833</td><td>0</td></tr>
+                  <tr><td><strong>Pagamento a Fornecedor</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0,2</td><td>0,2</td><td>1045</td><td>1045</td><td>0</td></tr>
+                  <tr><td><strong>Serv. Assessoramento Tecnico (CPP)</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0,3</td><td>0,3</td><td>1897</td><td>1897</td><td>0</td></tr>
+                  <tr><td><strong>Centralizacao Financeira</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0,6</td><td>0,6</td><td>3515</td><td>3515</td><td>0</td></tr>
+                  <tr><td><strong>Programa Reg. Beneficio Social</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0,0</td><td>0,0</td><td>109</td><td>109</td><td>0</td></tr>
+                  <tr><td><strong>Indicador de Negocios Governo (ING)</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>5,7</td><td>5,7</td><td>31733</td><td>31733</td><td>0</td></tr>
+                  <tr><td><strong>Receita de Prestacao Servicos (RPS)</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>5,2</td><td>5,2</td><td>29359</td><td>29359</td><td>0</td></tr>
+                  <tr><td><strong>Selo Gestao Sustentavel</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0,1</td><td>0,1</td><td>802</td><td>802</td><td>0</td></tr>
+                  <tr><td><strong>Legislativo</strong></td><td>0</td><td>0</td><td>0</td><td>0</td><td>1,3</td><td>1,3</td><td>7299</td><td>7299</td><td>0</td></tr>
+                  <tr style="background:#f0f2f5;font-weight:900">
+                    <td>TOTAL</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>184294</td><td>184294</td><td>0</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tiny" style="padding:8px 10px">
+              Recomendacao Power BI: permitir ordenar por “Diferenca (Ini→Fim)” e adicionar filtro por Bloco/Subgrupo para encontrar os principais drivers.
+            </div>
+          </div>
+        </div>
+
+        <!-- ANÁLISE: Ranking de variação + Peso na nota -->
+        <div class="g2">
+          <div class="card">
+            <div class="card-hdr">
+              Ranking de Variacao no Periodo (Δ%)
+              <span class="help" title="Ordena produtos do maior crescimento a maior queda. Identifica rapidamente os destaques positivos e negativos.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox lg">
+                <table class="data-tbl">
+                  <thead><tr><th>Produto/Servico</th><th style="width:90px">Δ%</th><th style="width:90px">Δ pts</th></tr></thead>
+                  <tbody>
+                    <tr><td>Marketshare Investimento</td><td class="pos"><strong>+28,56%</strong></td><td class="pos">+412</td></tr>
+                    <tr><td>Marketshare Financiamento</td><td class="pos"><strong>+20,65%</strong></td><td class="pos">+286</td></tr>
+                    <tr><td>Selo Gestao Sustentavel</td><td class="pos"><strong>+17,92%</strong></td><td class="pos">+122</td></tr>
+                    <tr><td>ING — Ind. Neg. Governo</td><td class="pos"><strong>+16,54%</strong></td><td class="pos">+312</td></tr>
+                    <tr><td>Transferencias Especiais</td><td class="pos"><strong>+5,51%</strong></td><td class="pos">+88</td></tr>
+                    <tr><td>Folha de Pagamento</td><td class="pos"><strong>+4,62%</strong></td><td class="pos">+54</td></tr>
+                    <tr><td>Centralizacao Financeira</td><td class="pos"><strong>+1,92%</strong></td><td class="pos">+18</td></tr>
+                    <tr><td>Convenio Consignado</td><td class="pos"><strong>+0,64%</strong></td><td class="pos">+9</td></tr>
+                    <tr><td>FINISA Verde e Transf. Digital</td><td class="neu"><strong>0,00%</strong></td><td class="neu">0</td></tr>
+                    <tr><td>Arrecadacao &amp; Cobranca</td><td class="neg"><strong>−0,59%</strong></td><td class="neg">−8</td></tr>
+                    <tr><td>Receita Prest. Servicos (RPS)</td><td class="neg"><strong>−1,06%</strong></td><td class="neg">−18</td></tr>
+                    <tr><td>QUOTA Salario Educacao</td><td class="neg"><strong>−2,06%</strong></td><td class="neg">−13</td></tr>
+                    <tr><td>FAF Saude</td><td class="neg"><strong>−4,40%</strong></td><td class="neg">−56</td></tr>
+                    <tr><td>Pagamento a Fornecedor</td><td class="neg"><strong>−7,85%</strong></td><td class="neg">−9</td></tr>
+                    <tr><td>FUNDEB</td><td class="neg"><strong>−12,14%</strong></td><td class="neg">−5</td></tr>
+                    <tr><td>Serv. Assessoramento Tecnico</td><td class="neg"><strong>−35,97%</strong></td><td class="neg">−68</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Em Power BI: barras divergentes (verde/vermelho) facilitam leitura instantanea dos extremos.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">
+              Peso de Cada Produto na Nota Total (Soma de Notas)
+              <span class="help" title="Mostra quanto cada produto representa do total de pontos do IRC. Produtos de maior peso merecem prioridade de gestao.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox lg">
+                <table class="data-tbl">
+                  <thead><tr><th>Produto/Servico</th><th style="width:100px">Soma Notas</th><th style="width:90px">% do Total</th></tr></thead>
+                  <tbody>
+                    <tr><td>ING — Ind. Neg. Governo</td><td><strong>31.733</strong></td><td><div class="bar-track"><div class="bar-fill bar-f1" style="width:17.2%;color:#0d1f3c">17,2%</div></div></td></tr>
+                    <tr><td>Receita Prest. Servicos (RPS)</td><td><strong>29.359</strong></td><td><div class="bar-track"><div class="bar-fill bar-f1" style="width:15.9%;color:#0d1f3c">15,9%</div></div></td></tr>
+                    <tr><td>Convenio Consignado</td><td><strong>22.195</strong></td><td><div class="bar-track"><div class="bar-fill bar-f2" style="width:12.0%;color:#0d1f3c">12,0%</div></div></td></tr>
+                    <tr><td>Marketshare Investimento</td><td><strong>19.855</strong></td><td><div class="bar-track"><div class="bar-fill bar-f2" style="width:10.8%;color:#0d1f3c">10,8%</div></div></td></tr>
+                    <tr><td>Arrecadacao &amp; Cobranca</td><td><strong>16.833</strong></td><td><div class="bar-track"><div class="bar-fill bar-f3" style="width:9.1%;color:#0d1f3c">9,1%</div></div></td></tr>
+                    <tr><td>Marketshare Financiamento</td><td><strong>14.985</strong></td><td><div class="bar-track"><div class="bar-fill bar-f3" style="width:8.1%;color:#0d1f3c">8,1%</div></div></td></tr>
+                    <tr><td>FAF Saude</td><td><strong>12.101</strong></td><td><div class="bar-track"><div class="bar-fill bar-f3" style="width:6.6%;color:#0d1f3c">6,6%</div></div></td></tr>
+                    <tr><td>Legislativo</td><td><strong>7.299</strong></td><td><div class="bar-track"><div class="bar-fill bar-f4" style="width:4.0%;color:#0d1f3c">4,0%</div></div></td></tr>
+                    <tr><td>QUOTA Salario Educacao</td><td><strong>6.288</strong></td><td><div class="bar-track"><div class="bar-fill bar-f4" style="width:3.4%;color:#0d1f3c">3,4%</div></div></td></tr>
+                    <tr><td>Folha de Pagamento</td><td><strong>6.268</strong></td><td><div class="bar-track"><div class="bar-fill bar-f4" style="width:3.4%;color:#0d1f3c">3,4%</div></div></td></tr>
+                    <tr><td>Transferencias Especiais</td><td><strong>5.327</strong></td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:2.9%;color:#0d1f3c">2,9%</div></div></td></tr>
+                    <tr><td>Fundos RPPS</td><td><strong>4.596</strong></td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:2,5%;color:#0d1f3c">2,5%</div></div></td></tr>
+                    <tr><td>Centralizacao Financeira</td><td><strong>3.515</strong></td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:1.9%;color:#0d1f3c">1,9%</div></div></td></tr>
+                    <tr><td>Serv. Assessoramento Tecnico</td><td><strong>1.897</strong></td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:1.0%;color:#0d1f3c">1,0%</div></div></td></tr>
+                    <tr><td>Pagamento a Fornecedor</td><td><strong>1.045</strong></td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:0.6%;color:#0d1f3c">0,6%</div></div></td></tr>
+                    <tr><td>Selo Gestao Sustentavel</td><td><strong>802</strong></td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:0.4%;color:#0d1f3c">0,4%</div></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Os 4 maiores produtos respondem por ~56% de toda a nota IRC. Concentracao a monitorar.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANÁLISE: Presença + Por Bloco -->
+        <div class="g2">
+          <div class="card">
+            <div class="card-hdr">
+              Presenca dos Produtos no Recorte (% de Entes Aderentes)
+              <span class="help" title="Mostra o alcance de cada produto: quantos % dos entes do recorte possuem/aderiram. Alto alcance = produto consolidado; baixo = oportunidade de expansao.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox lg">
+                <table class="data-tbl">
+                  <thead><tr><th>Produto/Servico</th><th style="width:80px">Qtd Entes</th><th style="width:140px">% Entes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Arrecadacao &amp; Cobranca</td><td>4.344</td><td><div class="bar-track"><div class="bar-fill bar-f1" style="width:78%;color:#0d1f3c">78%</div></div></td></tr>
+                    <tr><td>Centralizacao Financeira</td><td>4.065</td><td><div class="bar-track"><div class="bar-fill bar-f1" style="width:73%;color:#0d1f3c">73%</div></div></td></tr>
+                    <tr><td>Convenio Consignado</td><td>3.843</td><td><div class="bar-track"><div class="bar-fill bar-f2" style="width:69%;color:#0d1f3c">69%</div></div></td></tr>
+                    <tr><td>RPS — Rec. Prest. Servicos</td><td>3.453</td><td><div class="bar-track"><div class="bar-fill bar-f2" style="width:62%;color:#0d1f3c">62%</div></div></td></tr>
+                    <tr><td>ING — Ind. Neg. Governo</td><td>3.230</td><td><div class="bar-track"><div class="bar-fill bar-f3" style="width:58%;color:#0d1f3c">58%</div></div></td></tr>
+                    <tr><td>Marketshare Investimento</td><td>2.283</td><td><div class="bar-track"><div class="bar-fill bar-f3" style="width:41%;color:#0d1f3c">41%</div></div></td></tr>
+                    <tr><td>Folha de Pagamento</td><td>1.671</td><td><div class="bar-track"><div class="bar-fill bar-f4" style="width:30%;color:#0d1f3c">30%</div></div></td></tr>
+                    <tr><td>FAF Saude</td><td>1.392</td><td><div class="bar-track"><div class="bar-fill bar-f4" style="width:25%;color:#0d1f3c">25%</div></div></td></tr>
+                    <tr><td>Legislativo</td><td>1.225</td><td><div class="bar-track"><div class="bar-fill bar-f4" style="width:22%;color:#0d1f3c">22%</div></div></td></tr>
+                    <tr><td>FINISA Verde e Transf. Digital</td><td>42</td><td><div class="bar-track"><div class="bar-fill bar-f5" style="width:0.8%;color:#0d1f3c">0,8%</div></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Produtos de baixa presenca (FINISA, Legislativo) sao oportunidades de expansao no portfolio.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">
+              Consolidacao por Bloco
+              <span class="help" title="Agrupa os produtos nos 5 blocos do IRC e mostra peso e variacao de cada bloco. Responde: qual bloco sustenta a nota e qual esta puxando para baixo.">i</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="scrollbox">
+                <table class="data-tbl">
+                  <thead><tr><th>Bloco</th><th style="width:70px">Produtos</th><th style="width:110px">Soma Notas</th><th style="width:80px">% Total</th><th style="width:80px">Δ pts</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge bloco-serv" style="margin:0">Servicos</span></td><td>6</td><td><strong>61.483</strong></td><td>33,4%</td><td class="pos"><strong>+0,1</strong></td></tr>
+                    <tr><td><span class="badge bloco-inv" style="margin:0">Investimento</span></td><td>5</td><td><strong>48.586</strong></td><td>26,4%</td><td class="pos"><strong>+0,4</strong></td></tr>
+                    <tr><td><span class="badge bloco-fin" style="margin:0">Financiamento</span></td><td>3</td><td><strong>52.165</strong></td><td>28,3%</td><td class="neg"><strong>−0,2</strong></td></tr>
+                    <tr><td><span class="badge bloco-rent" style="margin:0">Rentabilidade</span></td><td>2</td><td><strong>8.111</strong></td><td>4,4%</td><td class="pos"><strong>+0,5</strong></td></tr>
+                    <tr><td><span class="badge bloco-soc" style="margin:0">Socioambiental</span></td><td>2</td><td><strong>911</strong></td><td>0,5%</td><td class="pos"><strong>+0,3</strong></td></tr>
+                    <tr style="background:#f0f2f5;font-weight:900"><td>TOTAL</td><td>18</td><td>184.294</td><td>100%</td><td class="neu">—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tiny" style="padding:8px 10px">Servicos e Financiamento concentram 62% da nota. Investimento e o bloco que mais cresce (+0,4).</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SubItens -->
+      <!-- SubItens -->
+      <div id="panel-subitens" class="panel">
+
+        <!-- KPIs DE SUB PRODUTOS/SERVIÇOS -->
+        <div class="kpi-row" style="grid-template-columns:repeat(5,1fr)">
+          <div class="kpi" style="border-left-color:var(--blue-main)">
+            <div class="kpi-lbl">Produtos detalhados <span class="help dark" title="Total de produtos analisados nesta aba (com e sem subitens).">i</span></div>
+            <div class="kpi-val">18</div>
+            <div class="kpi-sub">10 com subitens · 8 únicos</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">Produtos com subitens <span class="help dark" title="Produtos compostos por mais de um item (ex: Folha = Gratuita + Paga).">i</span></div>
+            <div class="kpi-val" style="color:var(--green)">10</div>
+            <div class="kpi-chg pos">Decomponíveis</div>
+            <div class="kpi-sub">Permitem análise granular</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--amber)">
+            <div class="kpi-lbl">Maior migração Caixa <span class="help dark" title="Subitem com maior ganho de participação para a CAIXA no periodo.">i</span></div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.25">Mktshare Inv.<br>Valor Caixa</div>
+            <div class="kpi-chg pos">▲ +40 entes</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--red)">
+            <div class="kpi-lbl">Maior queda de subitem <span class="help dark" title="Subitem que mais perdeu entes no periodo.">i</span></div>
+            <div class="kpi-val" style="font-size:15px;line-height:1.25">Folha<br>Gratuita</div>
+            <div class="kpi-chg neg">▼ −30 entes</div>
+          </div>
+          <div class="kpi" style="border-left-color:var(--green)">
+            <div class="kpi-lbl">Entes prox. da meta <span class="help dark" title="Centralizacao Financeira: entes com 7 de 12 produtos, a um passo de pontuar.">i</span></div>
+            <div class="kpi-val" style="color:var(--amber)">340</div>
+            <div class="kpi-chg neu">7 de 12 produtos</div>
+            <div class="kpi-sub">Foco de conversão imediata</div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             SEÇÃO CONSOLIDADA (TOPO) — visão de todos juntos
+        ═══════════════════════════════════════════════ -->
+
+        <!-- QUADRO COMPARATIVO DE TODOS OS SUBPRODUTOS -->
+        <div class="card">
+          <div class="card-hdr">
+            Quadro Comparativo — Todos os Subprodutos
+            <span class="help" title="Compara todos os produtos com subitens em uma unica tabela: adesao, migracao no periodo e direcao do fluxo. Permite ver de relance onde esta o movimento.">i</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="scrollbox lg" style="overflow:auto">
+              <table class="data-tbl" style="min-width:1000px">
+                <thead>
+                  <tr>
+                    <th style="width:190px">Produto</th>
+                    <th>Bloco</th>
+                    <th>Subitens</th>
+                    <th style="width:120px">Subitem dominante</th>
+                    <th style="width:90px">Qtd Ini</th>
+                    <th style="width:90px">Qtd Fim</th>
+                    <th style="width:80px">Δ entes</th>
+                    <th style="width:130px">Direção do fluxo</th>
+                    <th style="width:110px">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr onclick="showSIfromTable('si-folha')">
+                    <td><strong>Folha de Pagamento</strong></td>
+                    <td><span class="badge bloco-serv" style="margin:0">Serviços</span></td>
+                    <td>2</td>
+                    <td>Paga (80)</td>
+                    <td>120</td><td>100</td>
+                    <td class="neg"><strong>−20</strong></td>
+                    <td class="pos">Gratuita → Paga</td>
+                    <td><span class="badge badge-g">Upsell ativo</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-mkt-inv')">
+                    <td><strong>Mktshare Investimento</strong></td>
+                    <td><span class="badge bloco-inv" style="margin:0">Investim.</span></td>
+                    <td>2</td>
+                    <td>Valor Caixa (460)</td>
+                    <td>700</td><td>700</td>
+                    <td class="neu"><strong>0</strong></td>
+                    <td class="pos">Externo → Caixa (+40)</td>
+                    <td><span class="badge badge-g">Ganho share</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-mkt-fin')">
+                    <td><strong>Mktshare Financiamento</strong></td>
+                    <td><span class="badge bloco-fin" style="margin:0">Financ.</span></td>
+                    <td>2</td>
+                    <td>Valor Caixa (430)</td>
+                    <td>700</td><td>700</td>
+                    <td class="neu"><strong>0</strong></td>
+                    <td class="pos">Externo → Caixa (+40)</td>
+                    <td><span class="badge badge-g">Ganho share</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-arrecad')">
+                    <td><strong>Arrecadação &amp; Cobrança</strong></td>
+                    <td><span class="badge bloco-serv" style="margin:0">Serviços</span></td>
+                    <td>2</td>
+                    <td>Conv. Arrecad. (1.850)</td>
+                    <td>—</td><td>—</td>
+                    <td class="pos"><strong>+30</strong></td>
+                    <td class="pos">Expansão de ambos</td>
+                    <td><span class="badge badge-g">Crescendo</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-cpp')">
+                    <td><strong>CPP</strong></td>
+                    <td><span class="badge bloco-fin" style="margin:0">Financ.</span></td>
+                    <td>3</td>
+                    <td>Prop. &lt;R$10k (390)</td>
+                    <td>795</td><td>812</td>
+                    <td class="pos"><strong>+17</strong></td>
+                    <td class="pos">Proposta → Contrato</td>
+                    <td><span class="badge badge-g">Maturando</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-central')">
+                    <td><strong>Centralização Financeira</strong></td>
+                    <td><span class="badge bloco-rent" style="margin:0">Rentab.</span></td>
+                    <td>12 itens</td>
+                    <td>≥8 produtos (1.310)</td>
+                    <td>1.240</td><td>1.310</td>
+                    <td class="pos"><strong>+70</strong></td>
+                    <td class="pos">7 → 8 produtos</td>
+                    <td><span class="badge badge-g">Convertendo</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-rpps')">
+                    <td><strong>Fundos RPPS</strong></td>
+                    <td><span class="badge bloco-inv" style="margin:0">Investim.</span></td>
+                    <td>2</td>
+                    <td>Invest. Caixa (870)</td>
+                    <td>820</td><td>870</td>
+                    <td class="pos"><strong>+50</strong></td>
+                    <td class="pos">Share 66% → 70%</td>
+                    <td><span class="badge badge-g">Ganho share</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-legis')">
+                    <td><strong>Legislativo</strong></td>
+                    <td><span class="badge bloco-serv" style="margin:0">Serviços</span></td>
+                    <td>5 produtos</td>
+                    <td>Conta NSGD (710)</td>
+                    <td>—</td><td>—</td>
+                    <td class="pos"><strong>+45</strong></td>
+                    <td class="neg">Fornecedor caindo</td>
+                    <td><span class="badge badge-y">Atenção elo</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-transf')">
+                    <td><strong>Transferências Especiais</strong></td>
+                    <td><span class="badge bloco-inv" style="margin:0">Investim.</span></td>
+                    <td>2</td>
+                    <td>Total (5.010)</td>
+                    <td>—</td><td>—</td>
+                    <td class="pos"><strong>+240</strong></td>
+                    <td class="pos">Share 44% → 47%</td>
+                    <td><span class="badge badge-g">Ganho share</span></td>
+                  </tr>
+                  <tr onclick="showSIfromTable('si-finisa')">
+                    <td><strong>FINISA Verde e Transf. Digital</strong></td>
+                    <td><span class="badge bloco-soc" style="margin:0">Socioamb.</span></td>
+                    <td>1</td>
+                    <td>Com contrato (42)</td>
+                    <td>38</td><td>42</td>
+                    <td class="pos"><strong>+4</strong></td>
+                    <td class="neu">Adesão lenta</td>
+                    <td><span class="badge badge-r">Baixa adesão</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tiny" style="padding:8px 10px">Clique numa linha para abrir o detalhe do produto. Status resume a leitura: verde = saudável, amarelo = atenção, vermelho = crítico.</div>
+          </div>
+        </div>
+
+        <!-- RANKING DE ENTES PRIORITÁRIOS PARA AÇÃO -->
+        <div class="card">
+          <div class="card-hdr">
+            Entes Prioritários para Ação (Consolidado)
+            <span class="help" title="Lista de entes com maior potencial de ganho rapido: estao a um passo de migrar/pontuar em algum subproduto. Ordenado por impacto estimado na nota.">i</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="scrollbox lg" style="overflow:auto">
+              <table class="data-tbl" style="min-width:1000px">
+                <thead>
+                  <tr>
+                    <th style="width:200px">Ente</th>
+                    <th>UF</th>
+                    <th>Faixa</th>
+                    <th style="width:200px">Oportunidade identificada</th>
+                    <th style="width:120px">Subproduto</th>
+                    <th style="width:90px">Ganho est.</th>
+                    <th style="width:110px">Esforço</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr onclick="openPanel('Municipio de Caxias, MA')">
+                    <td><strong>Mun. de Caxias</strong></td><td>MA</td>
+                    <td><span class="badge badge-y">Em Diversif.</span></td>
+                    <td>Tem 7 de 12 produtos — falta 1 p/ Centralização</td>
+                    <td>Central. Fin.</td>
+                    <td class="pos"><strong>+0,6 pt</strong></td>
+                    <td><span class="badge badge-g">Baixo</span></td>
+                  </tr>
+                  <tr onclick="openPanel('Municipio de Sobral, CE')">
+                    <td><strong>Mun. de Sobral</strong></td><td>CE</td>
+                    <td><span class="badge badge-g">Em Rentab.</span></td>
+                    <td>Folha Gratuita → migrar p/ Paga (upsell)</td>
+                    <td>Folha Pgto.</td>
+                    <td class="pos"><strong>+0,4 pt</strong></td>
+                    <td><span class="badge badge-g">Baixo</span></td>
+                  </tr>
+                  <tr onclick="openPanel('Municipio de Parnaiba, PI')">
+                    <td><strong>Mun. de Parnaíba</strong></td><td>PI</td>
+                    <td><span class="badge badge-y">Em Diversif.</span></td>
+                    <td>Investim. 70% externo — R$ 18 mi a captar</td>
+                    <td>Mktshare Inv.</td>
+                    <td class="pos"><strong>+0,5 pt</strong></td>
+                    <td><span class="badge badge-y">Médio</span></td>
+                  </tr>
+                  <tr onclick="openPanel('Municipio de Picos, PI')">
+                    <td><strong>Mun. de Picos</strong></td><td>PI</td>
+                    <td><span class="badge badge-g">Em Rentab.</span></td>
+                    <td>CPP com proposta ≥R$10k — converter em contrato</td>
+                    <td>CPP</td>
+                    <td class="pos"><strong>+0,4 pt</strong></td>
+                    <td><span class="badge badge-y">Médio</span></td>
+                  </tr>
+                  <tr onclick="openPanel('Municipio de Crato, CE')">
+                    <td><strong>Mun. de Crato</strong></td><td>CE</td>
+                    <td><span class="badge badge-y">Em Desenv.</span></td>
+                    <td>Legislativo: falta só Pag. Fornecedor (4 de 5)</td>
+                    <td>Legislativo</td>
+                    <td class="pos"><strong>+0,3 pt</strong></td>
+                    <td><span class="badge badge-g">Baixo</span></td>
+                  </tr>
+                  <tr onclick="openPanel('Municipio de Imperatriz, MA')">
+                    <td><strong>Mun. de Imperatriz</strong></td><td>MA</td>
+                    <td><span class="badge badge-g">Em Rentab.</span></td>
+                    <td>Financiam. 62% externo — R$ 22 mi a captar</td>
+                    <td>Mktshare Fin.</td>
+                    <td class="pos"><strong>+0,5 pt</strong></td>
+                    <td><span class="badge badge-y">Médio</span></td>
+                  </tr>
+                  <tr onclick="openPanel('Municipio de Juazeiro, BA')">
+                    <td><strong>Mun. de Juazeiro</strong></td><td>BA</td>
+                    <td><span class="badge badge-y">Em Diversif.</span></td>
+                    <td>RPPS 57% share — espaço p/ crescer captação</td>
+                    <td>Fundos RPPS</td>
+                    <td class="pos"><strong>+0,3 pt</strong></td>
+                    <td><span class="badge badge-y">Médio</span></td>
+                  </tr>
+                  <tr onclick="openPanel('Municipio de Floriano, PI')">
+                    <td><strong>Mun. de Floriano</strong></td><td>PI</td>
+                    <td><span class="badge badge-y">Em Desenv.</span></td>
+                    <td>Só Conv. Arrecadação — falta Cobrança</td>
+                    <td>Arrec. &amp; Cobr.</td>
+                    <td class="pos"><strong>+0,2 pt</strong></td>
+                    <td><span class="badge badge-g">Baixo</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tiny" style="padding:8px 10px">Clique num ente para abrir o detalhe. "Ganho est." é o impacto estimado na nota IRC se a oportunidade for concretizada. Priorize esforço Baixo + ganho alto.</div>
+          </div>
+        </div>
+
+        <!-- divisor visual -->
+        <div style="display:flex;align-items:center;gap:8px;margin:4px 0">
+          <div style="flex:1;height:1px;background:var(--grey-line)"></div>
+          <span style="font-size:var(--fs-xxs);font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Detalhe por Produto</span>
+          <div style="flex:1;height:1px;background:var(--grey-line)"></div>
+        </div>
+
+        <!-- barra de navegação entre produtos -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;background:white;padding:8px 10px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.1)">
+          <span style="font-size:var(--fs-xxs);font-weight:900;color:var(--text-muted);align-self:center;text-transform:uppercase;letter-spacing:.5px;margin-right:4px">Produto:</span>
+          <button class="si-nav active" onclick="showSI('si-folha',this)">Folha Pgto.</button>
+          <button class="si-nav" onclick="showSI('si-mkt-inv',this)">Mktshare Invest.</button>
+          <button class="si-nav" onclick="showSI('si-mkt-fin',this)">Mktshare Financ.</button>
+          <button class="si-nav" onclick="showSI('si-arrecad',this)">Arrecad. &amp; Cobr.</button>
+          <button class="si-nav" onclick="showSI('si-cpp',this)">CPP</button>
+          <button class="si-nav" onclick="showSI('si-central',this)">Central. Financeira</button>
+          <button class="si-nav" onclick="showSI('si-rpps',this)">Fundos RPPS</button>
+          <button class="si-nav" onclick="showSI('si-legis',this)">Legislativo</button>
+          <button class="si-nav" onclick="showSI('si-transf',this)">Transf. Especiais</button>
+          <button class="si-nav" onclick="showSI('si-finisa',this)">FINISA Verde</button>
+          <!-- únicos -->
+          <button class="si-nav" onclick="showSI('si-ing',this)">ING</button>
+          <button class="si-nav" onclick="showSI('si-rps',this)">RPS</button>
+          <button class="si-nav" onclick="showSI('si-faf',this)">FAF Saúde</button>
+          <button class="si-nav" onclick="showSI('si-quota',this)">QUOTA Sal. Educ.</button>
+          <button class="si-nav" onclick="showSI('si-fundeb',this)">FUNDEB</button>
+          <button class="si-nav" onclick="showSI('si-fornec',this)">Pag. Fornecedor</button>
+          <button class="si-nav" onclick="showSI('si-sat',this)">Serv. Assess. Téc.</button>
+          <button class="si-nav" onclick="showSI('si-prbs',this)">Prog. Benef. Social</button>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             MACRO: produto com subitens
+             Layout: card-header com nome + bloco
+                     3 tabelas: período / segmento / faixa
+        ════════════════════════════════════════ -->
+
+        <!-- FOLHA DE PAGAMENTO -->
+        <div id="si-folha" class="si-bloco">
+          <div class="card">
+            <div class="card-hdr">
+              Folha de Pagamento
+              <span class="badge-bloco bloco-serv">Serviços</span>
+              <span class="help" title="Folha possui dois subtipos: Gratuita (sem custo ao ente) e Paga (contratada). Acompanhe a adesão e migração entre os tipos.">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <!-- tabela 1: período -->
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Entes por Período</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Gratuita</th><th>Paga</th><th>Total</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>50</td><td>70</td><td><strong>120</strong></td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>20</td><td>80</td><td><strong>100</strong></td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−30</td><td class="pos">+10</td><td class="neg">−20</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Migração de Gratuita → Paga indica upsell bem-sucedido.</div>
+              </div>
+
+              <!-- tabela 2: segmento -->
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Segmento (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Gratuita</th><th>Paga</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td>4 · 18%</td><td class="pos"><strong>18 · 18,0%</strong></td></tr>
+                    <tr><td>Municípios I</td><td>6 · 14%</td><td class="pos"><strong>21 · 21,0%</strong></td></tr>
+                    <tr><td>Municípios II</td><td>5 · 14%</td><td class="neg"><strong>11 · 11,0%</strong></td></tr>
+                    <tr><td>Municípios III</td><td>5 · 27%</td><td class="neg"><strong>12 · 12,0%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Qtd de entes do segmento · % que possui cada subtipo.</div>
+              </div>
+
+              <!-- tabela 3: faixa -->
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Faixa (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Gratuita</th><th>Paga</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td>4 · 18%</td><td class="pos"><strong>15 · 18,7%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td>3 · 14%</td><td class="pos"><strong>15 · 19,0%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td>3 · 14%</td><td class="neg"><strong>9 · 11,0%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td>5 · 27%</td><td class="pos"><strong>33 · 41,1%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td>5 · 51%</td><td class="neg"><strong>8 · 24,0%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Faixas mais altas tendem a migrar para Paga.</div>
+              </div>
+
+            </div>
+
+            <!-- ranking de entes deste produto -->
+            <div style="border-top:1px solid var(--grey-line);padding:8px 10px">
+              <div class="si-tbl-title" style="margin-bottom:6px">🎯 Entes prioritários — Folha Gratuita com potencial de migração p/ Paga</div>
+              <div class="scrollbox">
+                <table class="data-tbl">
+                  <thead><tr><th>Ente</th><th>UF</th><th>Faixa</th><th>Subitem atual</th><th>Ação sugerida</th><th>Ganho est.</th></tr></thead>
+                  <tbody>
+                    <tr onclick="openPanel('Municipio de Sobral, CE')"><td>Mun. de Sobral</td><td>CE</td><td><span class="badge badge-g">Em Rentab.</span></td><td>Gratuita</td><td>Migrar p/ Paga</td><td class="pos"><strong>+0,4 pt</strong></td></tr>
+                    <tr onclick="openPanel('Municipio de Russas, CE')"><td>Mun. de Russas</td><td>CE</td><td><span class="badge badge-y">Em Diversif.</span></td><td>Gratuita</td><td>Migrar p/ Paga</td><td class="pos"><strong>+0,4 pt</strong></td></tr>
+                    <tr onclick="openPanel('Municipio de Bacabal, MA')"><td>Mun. de Bacabal</td><td>MA</td><td><span class="badge badge-y">Em Desenv.</span></td><td>Gratuita</td><td>Migrar p/ Paga</td><td class="pos"><strong>+0,3 pt</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MARKETSHARE INVESTIMENTO -->
+        <div id="si-mkt-inv" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              Marketshare Investimento
+              <span class="badge-bloco bloco-inv">Investimento</span>
+              <span class="help" title="Compara a participação de mercado dos investimentos: Valor Externo (outros bancos) vs Valor Caixa (CAIXA Econômica).">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Entes + Volume R$ por Período</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Valor Externo</th><th>Valor Caixa</th><th>Total</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>280 entes</td><td>420 entes</td><td><strong>700</strong></td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>240 entes</td><td>460 entes</td><td><strong>700</strong></td></tr>
+                    <tr class="si-delta-row"><td>Δ entes</td><td class="neg">−40</td><td class="pos">+40</td><td class="neu">0</td></tr>
+                    <tr><td><strong>R$ Início</strong></td><td>R$ 1,82 bi</td><td>R$ 2,74 bi</td><td><strong>R$ 4,56 bi</strong></td></tr>
+                    <tr><td><strong>R$ Fim</strong></td><td>R$ 1,51 bi</td><td>R$ 3,12 bi</td><td><strong>R$ 4,63 bi</strong></td></tr>
+                    <tr class="si-delta-row"><td>Δ R$</td><td class="neg">−R$ 310 mi</td><td class="pos">+R$ 380 mi</td><td class="pos">+R$ 70 mi</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">CAIXA ganhou +40 entes e +R$ 380 mi em volume — share crescente.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Segmento (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Valor Externo</th><th>Valor Caixa</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td class="neg">38 · 42%</td><td class="pos"><strong>52 · 58%</strong></td></tr>
+                    <tr><td>Municípios I</td><td class="neg">84 · 35%</td><td class="pos"><strong>156 · 65%</strong></td></tr>
+                    <tr><td>Municípios II</td><td class="neu">95 · 50%</td><td class="neu"><strong>95 · 50%</strong></td></tr>
+                    <tr><td>Municípios III</td><td class="pos">23 · 61%</td><td class="neg"><strong>15 · 39%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Municípios III têm maior concentração externa — oportunidade de conversão.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Faixa (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Valor Externo</th><th>Valor Caixa</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="neg">52 · 28%</td><td class="pos"><strong>134 · 72%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="neg">79 · 33%</td><td class="pos"><strong>161 · 67%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu">48 · 48%</td><td class="neu"><strong>52 · 52%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="pos">42 · 60%</td><td class="neg"><strong>28 · 40%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="pos">19 · 74%</td><td class="neg"><strong>7 · 26%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Entes em faixas superiores têm maior concentração no Valor Caixa.</div>
+              </div>
+
+            </div>
+
+            <!-- ranking de entes deste produto -->
+            <div style="border-top:1px solid var(--grey-line);padding:8px 10px">
+              <div class="si-tbl-title" style="margin-bottom:6px">🎯 Entes prioritários — maior volume externo a captar p/ a Caixa</div>
+              <div class="scrollbox">
+                <table class="data-tbl">
+                  <thead><tr><th>Ente</th><th>UF</th><th>Faixa</th><th>% Externo</th><th>R$ a captar</th><th>Ganho est.</th></tr></thead>
+                  <tbody>
+                    <tr onclick="openPanel('Municipio de Parnaiba, PI')"><td>Mun. de Parnaíba</td><td>PI</td><td><span class="badge badge-y">Em Diversif.</span></td><td class="pos">70%</td><td><strong>R$ 18 mi</strong></td><td class="pos"><strong>+0,5 pt</strong></td></tr>
+                    <tr onclick="openPanel('Municipio de Codo, MA')"><td>Mun. de Codó</td><td>MA</td><td><span class="badge badge-y">Em Desenv.</span></td><td class="pos">68%</td><td><strong>R$ 14 mi</strong></td><td class="pos"><strong>+0,4 pt</strong></td></tr>
+                    <tr onclick="openPanel('Municipio de Quixada, CE')"><td>Mun. de Quixadá</td><td>CE</td><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu">52%</td><td><strong>R$ 9 mi</strong></td><td class="pos"><strong>+0,3 pt</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MARKETSHARE FINANCIAMENTO -->
+        <div id="si-mkt-fin" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              Marketshare Financiamento
+              <span class="badge-bloco bloco-fin">Financiamento</span>
+              <span class="help" title="Compara participação nos financiamentos: Valor Externo (outros bancos) vs Valor Caixa (CAIXA). Objetivo é aumentar share da CAIXA.">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Entes + Volume R$ por Período</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Valor Externo</th><th>Valor Caixa</th><th>Total</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>310 entes</td><td>390 entes</td><td><strong>700</strong></td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>270 entes</td><td>430 entes</td><td><strong>700</strong></td></tr>
+                    <tr class="si-delta-row"><td>Δ entes</td><td class="neg">−40</td><td class="pos">+40</td><td class="neu">0</td></tr>
+                    <tr><td><strong>R$ Início</strong></td><td>R$ 2,10 bi</td><td>R$ 2,46 bi</td><td><strong>R$ 4,56 bi</strong></td></tr>
+                    <tr><td><strong>R$ Fim</strong></td><td>R$ 1,79 bi</td><td>R$ 2,88 bi</td><td><strong>R$ 4,67 bi</strong></td></tr>
+                    <tr class="si-delta-row"><td>Δ R$</td><td class="neg">−R$ 310 mi</td><td class="pos">+R$ 420 mi</td><td class="pos">+R$ 110 mi</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Ganho de +40 entes e +R$ 420 mi de volume migrado para a CAIXA.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Segmento (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Valor Externo</th><th>Valor Caixa</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td class="neg">34 · 38%</td><td class="pos"><strong>56 · 62%</strong></td></tr>
+                    <tr><td>Municípios I</td><td class="neg">96 · 40%</td><td class="pos"><strong>144 · 60%</strong></td></tr>
+                    <tr><td>Municípios II</td><td class="neu">99 · 52%</td><td class="neg"><strong>91 · 48%</strong></td></tr>
+                    <tr><td>Municípios III</td><td class="pos">25 · 65%</td><td class="neg"><strong>13 · 35%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Municípios III concentram financiamentos externos — foco de captação.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Faixa (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Valor Externo</th><th>Valor Caixa</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="neg">47 · 25%</td><td class="pos"><strong>139 · 75%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="neg">86 · 36%</td><td class="pos"><strong>154 · 64%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu">49 · 49%</td><td class="neu"><strong>51 · 51%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="pos">43 · 62%</td><td class="neg"><strong>27 · 38%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="pos">20 · 77%</td><td class="neg"><strong>6 · 23%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Relação direta: quanto maior a faixa, maior o Valor Caixa.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ARRECADAÇÃO & COBRANÇA -->
+        <div id="si-arrecad" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              Arrecadação &amp; Cobrança
+              <span class="badge-bloco bloco-serv">Serviços</span>
+              <span class="help" title="Exibe quais entes possuem convênio ativo de arrecadação, de cobrança ou ambos. Um ente pode ter os dois tipos simultaneamente.">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Entes por Período</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Conv. Arrecad.</th><th>Conv. Cobr.</th><th>Ambos</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>1.820</td><td>940</td><td>610</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>1.850</td><td>960</td><td>630</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="pos">+30</td><td class="pos">+20</td><td class="pos">+20</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Entes com "Ambos" têm maior engajamento e tendem a estar em faixas superiores.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Segmento (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Conv. Arrecad.</th><th>Conv. Cobr.</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td class="pos"><strong>83 · 92%</strong></td><td class="pos"><strong>67 · 74%</strong></td></tr>
+                    <tr><td>Municípios I</td><td class="pos"><strong>880 · 88%</strong></td><td class="pos"><strong>610 · 61%</strong></td></tr>
+                    <tr><td>Municípios II</td><td class="neu"><strong>1.268 · 71%</strong></td><td class="neu"><strong>804 · 45%</strong></td></tr>
+                    <tr><td>Municípios III</td><td class="neg"><strong>438 · 48%</strong></td><td class="neg"><strong>201 · 22%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Municípios III têm baixa adesão a cobrança — oportunidade de expansão.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Faixa (Dt Fim) — Qtd · %</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Conv. Arrecad.</th><th>Conv. Cobr.</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>952 · 97%</strong></td><td class="pos"><strong>805 · 82%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="pos"><strong>1.572 · 88%</strong></td><td class="pos"><strong>1.143 · 64%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu"><strong>666 · 73%</strong></td><td class="neu"><strong>438 · 48%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>576 · 55%</strong></td><td class="neg"><strong>325 · 31%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>700 · 38%</strong></td><td class="neg"><strong>258 · 14%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Fidelizados têm quase 100% de arrecadação — padrão de excelência.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- CPP -->
+        <div id="si-cpp" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              CPP — Crédito Pessoa Pública
+              <span class="badge-bloco bloco-fin">Financiamento</span>
+              <span class="help" title="CPP tem 3 estágios: proposta &lt;R$10k, proposta ≥R$10k e contrato PPP assinado. Cada estágio indica maturidade diferente do relacionamento.">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Entes por Período</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Prop. &lt;R$10k</th><th>Prop. ≥R$10k</th><th>Contrato PPP</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>420</td><td>280</td><td>95</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>390</td><td>310</td><td>112</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−30</td><td class="pos">+30</td><td class="pos">+17</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Migração de propostas &lt;10k para ≥10k e contratos indica maturação do pipeline.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Segmento (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Prop. &lt;R$10k</th><th>Prop. ≥R$10k</th><th>Contrato PPP</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td>18%</td><td class="pos"><strong>42%</strong></td><td class="pos"><strong>28%</strong></td></tr>
+                    <tr><td>Municípios I</td><td>24%</td><td class="pos"><strong>38%</strong></td><td class="pos"><strong>19%</strong></td></tr>
+                    <tr><td>Municípios II</td><td>31%</td><td class="neu"><strong>21%</strong></td><td class="neu"><strong>8%</strong></td></tr>
+                    <tr><td>Municípios III</td><td class="pos">47%</td><td class="neg"><strong>9%</strong></td><td class="neg"><strong>2%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Municípios III concentram propostas pequenas — potencial de evolução.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Faixa (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Prop. &lt;R$10k</th><th>Prop. ≥R$10k</th><th>Contrato PPP</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td>12%</td><td class="pos"><strong>45%</strong></td><td class="pos"><strong>38%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td>20%</td><td class="pos"><strong>40%</strong></td><td class="pos"><strong>22%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td>34%</td><td class="neu"><strong>25%</strong></td><td class="neu"><strong>10%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="pos">50%</td><td class="neg"><strong>14%</strong></td><td class="neg"><strong>4%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="pos">62%</td><td class="neg"><strong>6%</strong></td><td class="neg"><strong>1%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Fidelizados concentram contratos PPP — estágio mais avançado do produto.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTRALIZAÇÃO FINANCEIRA -->
+        <div id="si-central" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              Centralização Financeira
+              <span class="badge-bloco bloco-rent">Rentabilidade</span>
+              <span class="help" title="Para pontuar, o ente deve possuir 8 de 12 produtos dos blocos de Investimento e/ou Serviços. A tabela mostra quais itens o ente possui.">i</span>
+            </div>
+            <div class="card-body">
+              <div style="background:#fef9c3;border-left:3px solid #d97706;border-radius:3px;padding:8px 10px;margin-bottom:10px;font-size:var(--fs-xs);color:#78350f">
+                <strong>Regra:</strong> o ente precisa possuir <strong>8 de 12 produtos</strong> dos blocos de Investimento e/ou Serviços para pontuar neste indicador. As tabelas abaixo mostram a quantidade de itens que os entes possuem no período.
+              </div>
+              <div class="si-3col">
+
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Nº de Produtos (Período)</div>
+                  <table class="data-tbl">
+                    <thead><tr><th>Nº de Produtos</th><th>Dt Início</th><th>Dt Fim</th><th>Δ</th></tr></thead>
+                    <tbody>
+                      <tr><td>≥ 8 (pontua) ✅</td><td><strong>1.240</strong></td><td><strong>1.310</strong></td><td class="pos"><strong>+70</strong></td></tr>
+                      <tr><td>7 (quase lá)</td><td>380</td><td>340</td><td class="neg">−40</td></tr>
+                      <tr><td>5 – 6</td><td>620</td><td>580</td><td class="neg">−40</td></tr>
+                      <tr><td>≤ 4</td><td>1.080</td><td>1.100</td><td class="neg">+20</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="tiny">Entes com 7 produtos são os mais próximos de pontuar — foco prioritário.</div>
+                </div>
+
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% com ≥ 8 por Segmento (Dt Fim)</div>
+                  <table class="data-tbl">
+                    <thead><tr><th>Segmento</th><th>% com ≥ 8</th><th>% com 7</th></tr></thead>
+                    <tbody>
+                      <tr><td>Estados</td><td class="pos"><strong>74%</strong></td><td>12%</td></tr>
+                      <tr><td>Municípios I</td><td class="pos"><strong>68%</strong></td><td>14%</td></tr>
+                      <tr><td>Municípios II</td><td class="neu"><strong>41%</strong></td><td>18%</td></tr>
+                      <tr><td>Municípios III</td><td class="neg"><strong>19%</strong></td><td>22%</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="tiny">Municípios III têm 22% com 7 produtos — maior pool de conversão imediata.</div>
+                </div>
+
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% com ≥ 8 por Faixa (Dt Fim)</div>
+                  <table class="data-tbl">
+                    <thead><tr><th>Faixa</th><th>% com ≥ 8</th><th>% com 7</th></tr></thead>
+                    <tbody>
+                      <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>894 · 91%</strong></td><td>6%</td></tr>
+                      <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="pos"><strong>1.286 · 72%</strong></td><td>15%</td></tr>
+                      <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu"><strong>401 · 44%</strong></td><td>20%</td></tr>
+                      <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>230 · 22%</strong></td><td>24%</td></tr>
+                      <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>147 · 8%</strong></td><td>19%</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="tiny">Em Desenv. tem 24% com 7 produtos — ação direta pode promover para Diversif.</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FUNDOS RPPS -->
+        <div id="si-rpps" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              Fundos RPPS
+              <span class="badge-bloco bloco-inv">Investimento</span>
+              <span class="help" title="Compara o valor investido na CAIXA vs o total de investimentos do fundo (mercado). Objetivo: aumentar a participação da CAIXA no total do fundo.">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Entes por Período</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Invest. Caixa</th><th>Total Fundos</th><th>% Share</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>820</td><td>1.240</td><td><strong>66,1%</strong></td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>870</td><td>1.240</td><td class="pos"><strong>70,2%</strong></td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="pos">+50</td><td class="neu">0</td><td class="pos">+4,1 p.p.</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Crescimento do share Caixa sem variação no universo total indica captação efetiva.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">% Share Caixa por Segmento (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Invest. Caixa</th><th>Total Fundos</th><th>% Share</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td>280</td><td>370</td><td class="pos"><strong>75,7%</strong></td></tr>
+                    <tr><td>Municípios I</td><td>310</td><td>450</td><td class="pos"><strong>68,9%</strong></td></tr>
+                    <tr><td>Municípios II</td><td>190</td><td>290</td><td class="neu"><strong>65,5%</strong></td></tr>
+                    <tr><td>Municípios III</td><td>90</td><td>130</td><td class="neg"><strong>69,2%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Estados possuem maior share — modelo a replicar nos municípios.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">% Share Caixa por Faixa (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Invest. Caixa</th><th>Total Fundos</th><th>% Share</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td>320</td><td>410</td><td class="pos"><strong>78,0%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td>280</td><td>400</td><td class="pos"><strong>70,0%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td>160</td><td>250</td><td class="neu"><strong>64,0%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td>80</td><td>140</td><td class="neg"><strong>57,1%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td>30</td><td>40</td><td class="neg"><strong>75,0%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Em Desenv. tem menor share — ação de relacionamento pode reverter.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- LEGISLATIVO -->
+        <div id="si-legis" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              Legislativo
+              <span class="badge-bloco bloco-serv">Serviços</span>
+              <span class="help" title="O Legislativo pontua pela combinação de 5 produtos: Conta NSGD, Folha (gratuita ou paga), Consignado, Arrecadação/Cobrança e Pag. a Fornecedor.">i</span>
+            </div>
+            <div class="card-body">
+              <div style="background:#eff6ff;border-left:3px solid #2455a0;border-radius:3px;padding:8px 10px;margin-bottom:10px;font-size:var(--fs-xs);color:#1e3a6b">
+                <strong>Composição:</strong> pontuação gerada pela combinação de 5 produtos: Conta NSGD · Folha Processada na Caixa (comprada ou gratuita) · Convênio de Consignado · Arrecadação ou Cobrança · Pagamento a Fornecedor.
+              </div>
+              <div class="si-3col">
+
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Produto (Período)</div>
+                  <table class="data-tbl">
+                    <thead><tr><th>Produto</th><th>Dt Início</th><th>Dt Fim</th><th>Δ</th></tr></thead>
+                    <tbody>
+                      <tr><td>Conta NSGD</td><td>680</td><td>710</td><td class="pos"><strong>+30</strong></td></tr>
+                      <tr><td>Folha (comp. ou grat.)</td><td>540</td><td>560</td><td class="pos"><strong>+20</strong></td></tr>
+                      <tr><td>Conv. Consignado</td><td>490</td><td>495</td><td class="pos"><strong>+5</strong></td></tr>
+                      <tr><td>Arrec. ou Cobr.</td><td>610</td><td>625</td><td class="pos"><strong>+15</strong></td></tr>
+                      <tr><td>Pag. a Fornecedor</td><td>320</td><td>295</td><td class="neg"><strong>−25</strong></td></tr>
+                    </tbody>
+                  </table>
+                  <div class="tiny">Pag. a Fornecedor é o elo mais fraco — queda de 25 no período.</div>
+                </div>
+
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Produto e Segmento (Dt Fim)</div>
+                  <table class="data-tbl">
+                    <thead><tr><th>Segmento</th><th>NSGD</th><th>Folha</th><th>Consig.</th><th>Arrec.</th><th>Fornec.</th></tr></thead>
+                    <tbody>
+                      <tr><td>Estados</td><td class="pos">88%</td><td class="pos">76%</td><td class="pos">72%</td><td class="pos">84%</td><td class="neu">51%</td></tr>
+                      <tr><td>Mun. I</td><td class="pos">82%</td><td class="pos">68%</td><td class="pos">64%</td><td class="pos">78%</td><td class="neu">44%</td></tr>
+                      <tr><td>Mun. II</td><td class="neu">61%</td><td class="neu">50%</td><td class="neg">41%</td><td class="neu">62%</td><td class="neg">28%</td></tr>
+                      <tr><td>Mun. III</td><td class="neg">38%</td><td class="neg">29%</td><td class="neg">22%</td><td class="neg">41%</td><td class="neg">14%</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="tiny">Municípios III têm baixa adesão em todos os produtos — público prioritário.</div>
+                </div>
+
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Produto e Faixa (Dt Fim)</div>
+                  <table class="data-tbl">
+                    <thead><tr><th>Faixa</th><th>NSGD</th><th>Folha</th><th>Consig.</th><th>Arrec.</th><th>Fornec.</th></tr></thead>
+                    <tbody>
+                      <tr><td><span class="badge badge-g">Fidel.</span></td><td class="pos">96%</td><td class="pos">88%</td><td class="pos">84%</td><td class="pos">94%</td><td class="pos">68%</td></tr>
+                      <tr><td><span class="badge badge-g">Rentab.</span></td><td class="pos">84%</td><td class="pos">72%</td><td class="pos">67%</td><td class="pos">81%</td><td class="neu">52%</td></tr>
+                      <tr><td><span class="badge badge-y">Diversif.</span></td><td class="neu">62%</td><td class="neu">51%</td><td class="neg">44%</td><td class="neu">64%</td><td class="neg">32%</td></tr>
+                      <tr><td><span class="badge badge-y">Desenv.</span></td><td class="neg">40%</td><td class="neg">31%</td><td class="neg">24%</td><td class="neg">43%</td><td class="neg">18%</td></tr>
+                      <tr><td><span class="badge badge-r">Prosp.</span></td><td class="neg">22%</td><td class="neg">14%</td><td class="neg">10%</td><td class="neg">25%</td><td class="neg">8%</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="tiny">Entes em Prosp. têm baixo engajamento em todos — ação de onboarding necessária.</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRANSFERÊNCIAS ESPECIAIS -->
+        <div id="si-transf" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              Transferências Especiais
+              <span class="badge-bloco bloco-inv">Investimento</span>
+              <span class="help" title="Compara a quantidade total de repasses realizados no período vs a quantidade repassada especificamente para a CAIXA.">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Repasses por Período</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Total Repassado</th><th>Para Caixa</th><th>% Share</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>4.820</td><td>2.140</td><td><strong>44,4%</strong></td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>5.010</td><td>2.380</td><td class="pos"><strong>47,5%</strong></td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="pos">+190</td><td class="pos">+240</td><td class="pos">+3,1 p.p.</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Share da CAIXA cresceu mais que o total — captação superior ao mercado.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">% Share Caixa por Segmento (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Total</th><th>Para Caixa</th><th>% Share</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td>920</td><td>510</td><td class="pos"><strong>55,4%</strong></td></tr>
+                    <tr><td>Municípios I</td><td>1.840</td><td>940</td><td class="pos"><strong>51,1%</strong></td></tr>
+                    <tr><td>Municípios II</td><td>1.580</td><td>720</td><td class="neu"><strong>45,6%</strong></td></tr>
+                    <tr><td>Municípios III</td><td>670</td><td>210</td><td class="neg"><strong>31,3%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Municípios III têm menor share — potencial de crescimento expressivo.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">% Share Caixa por Faixa (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Total</th><th>Para Caixa</th><th>% Share</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td>980</td><td>620</td><td class="pos"><strong>63,3%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td>1.720</td><td>920</td><td class="pos"><strong>53,5%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td>1.100</td><td>510</td><td class="neu"><strong>46,4%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td>820</td><td>260</td><td class="neg"><strong>31,7%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td>390</td><td>70</td><td class="neg"><strong>17,9%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Entes em Prosp. direcionam apenas 18% das transferências à CAIXA.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- FINISA VERDE E TRANSFORMAÇÃO DIGITAL -->
+        <div id="si-finisa" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">
+              FINISA Verde e Transformação Digital
+              <span class="badge-bloco bloco-soc">Socioambiental</span>
+              <span class="help" title="Produto único: indica se o ente possui contrato FINISA Verde e/ou Transformação Digital assinado. Sem subitens — exibe status e evolução.">i</span>
+            </div>
+            <div class="card-body si-3col">
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Qtd de Entes com Contrato Assinado (Período)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Período</th><th>Com Contrato</th><th>Sem Contrato</th><th>Total</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Dt Início</strong></td><td class="pos"><strong>38</strong></td><td>5.531</td><td>5.569</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td class="pos"><strong>42</strong></td><td>5.527</td><td>5.569</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="pos">+4</td><td class="neg">−4</td><td class="neu">0</td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Produto com baixíssima adesão (0,75%) — cada novo contrato é relevante.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Segmento (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Segmento</th><th>Com Contrato</th><th>% do Seg.</th></tr></thead>
+                  <tbody>
+                    <tr><td>Estados</td><td>14</td><td class="pos"><strong>5,2%</strong></td></tr>
+                    <tr><td>Municípios I</td><td>18</td><td class="neu"><strong>1,8%</strong></td></tr>
+                    <tr><td>Municípios II</td><td>8</td><td class="neg"><strong>0,4%</strong></td></tr>
+                    <tr><td>Municípios III</td><td>2</td><td class="neg"><strong>0,1%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Estados têm maior penetração relativa — perfil de maior porte favorece o produto.</div>
+              </div>
+
+              <div class="si-tbl-wrap">
+                <div class="si-tbl-title">Distribuição por Faixa (Dt Fim)</div>
+                <table class="data-tbl">
+                  <thead><tr><th>Faixa</th><th>Com Contrato</th><th>% da Faixa</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td>18</td><td class="pos"><strong>1,8%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td>14</td><td class="neu"><strong>0,8%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td>6</td><td class="neg"><strong>0,7%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td>3</td><td class="neg"><strong>0,3%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td>1</td><td class="neg"><strong>0,1%</strong></td></tr>
+                  </tbody>
+                </table>
+                <div class="tiny">Fidelizados concentram contratos — produto mais adotado por entes maduros.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             PRODUTOS ÚNICOS (sem subitens)
+             Mostram aviso + distribuição por
+             segmento e faixa como contexto
+        ════════════════════════════════════════ -->
+
+        <!-- ING -->
+        <div id="si-ing" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">ING — Indicador de Negócios Governo <span class="badge-bloco bloco-inv">Investimento</span> <span class="help" title="Produto único, sem subitens.">i</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — este produto não possui subitens. A pontuação é atribuída diretamente ao produto. Abaixo: distribuição por segmento e faixa.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>3.780</td><td>1.789</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>3.842</td><td>1.727</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="pos">+62</td><td class="neg">−62</td></tr>
+                  </tbody></table>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>923 · 94%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="pos"><strong>1.465 · 82%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu"><strong>620 · 68%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>534 · 51%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>589 · 32%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RPS -->
+        <div id="si-rps" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">RPS — Receita de Prestação de Serviços <span class="badge-bloco bloco-serv">Serviços</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — sem subitens. Distribuição abaixo.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>4.180</td><td>1.389</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>4.150</td><td>1.419</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−30</td><td class="pos">+30</td></tr>
+                  </tbody></table>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>943 · 96%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="pos"><strong>1.590 · 89%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu"><strong>675 · 74%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>607 · 58%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>700 · 38%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAF SAÚDE -->
+        <div id="si-faf" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">FAF Saúde <span class="badge-bloco bloco-serv">Serviços</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — sem subitens. Distribuição abaixo.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>2.940</td><td>2.629</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>2.810</td><td>2.759</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−130</td><td class="pos">+130</td></tr>
+                  </tbody></table>
+                  <div class="tiny">Queda de 130 entes — produto com maior retração no período.</div>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>766 · 78%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="neu"><strong>1.107 · 62%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neg"><strong>438 · 48%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>429 · 41%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>516 · 28%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUOTA SALÁRIO EDUCAÇÃO -->
+        <div id="si-quota" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">QUOTA Salário Educação <span class="badge-bloco bloco-inv">Investimento</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — sem subitens. Distribuição abaixo.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>1.820</td><td>3.749</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>1.783</td><td>3.786</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−37</td><td class="pos">+37</td></tr>
+                  </tbody></table>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>599 · 61%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="neu"><strong>750 · 42%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neg"><strong>255 · 28%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>220 · 21%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>258 · 14%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FUNDEB -->
+        <div id="si-fundeb" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">FUNDEB <span class="badge-bloco bloco-inv">Investimento</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — sem subitens. Distribuição abaixo.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>3.410</td><td>2.159</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>3.000</td><td>2.569</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−410</td><td class="pos">+410</td></tr>
+                  </tbody></table>
+                  <div class="tiny">Maior queda absoluta — requer investigação urgente.</div>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>805 · 82%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="pos"><strong>1.250 · 70%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neu"><strong>492 · 54%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>429 · 41%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>516 · 28%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGAMENTO A FORNECEDOR -->
+        <div id="si-fornec" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">Pagamento a Fornecedor <span class="badge-bloco bloco-serv">Serviços</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — sem subitens. Distribuição abaixo.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>3.580</td><td>1.989</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>3.300</td><td>2.269</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−280</td><td class="pos">+280</td></tr>
+                  </tbody></table>
+                  <div class="tiny">Queda de 280 entes no período — produto em retração.</div>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>727 · 74%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="neu"><strong>1.107 · 62%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neg"><strong>438 · 48%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>398 · 38%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>405 · 22%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SERVIÇO DE ASSESSORAMENTO TÉCNICO -->
+        <div id="si-sat" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">Serviço de Assessoramento Técnico <span class="badge-bloco bloco-serv">Serviços</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — sem subitens. Distribuição abaixo.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>820</td><td>4.749</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>526</td><td>5.043</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="neg">−294</td><td class="pos">+294</td></tr>
+                  </tbody></table>
+                  <div class="tiny">Queda de −35,97% — produto com maior retração no período.</div>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="neu"><strong>177 · 18%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="neg"><strong>214 · 12%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neg"><strong>82 · 9%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>73 · 7%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>74 · 4%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROGRAMA REGIONAL DE BENEFÍCIO SOCIAL -->
+        <div id="si-prbs" class="si-bloco" style="display:none">
+          <div class="card">
+            <div class="card-hdr">Programa Regional de Benefício Social <span class="badge-bloco bloco-soc">Socioambiental</span></div>
+            <div class="card-body">
+              <div class="si-unico-aviso">ℹ️ <strong>Item único</strong> — sem subitens. Distribuição abaixo.</div>
+              <div class="g2" style="margin-top:10px">
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">Qtd de Entes por Período</div>
+                  <table class="data-tbl"><thead><tr><th>Período</th><th>Com produto</th><th>Sem produto</th></tr></thead><tbody>
+                    <tr><td><strong>Dt Início</strong></td><td>1.240</td><td>4.329</td></tr>
+                    <tr><td><strong>Dt Fim</strong></td><td>1.490</td><td>4.079</td></tr>
+                    <tr class="si-delta-row"><td>Δ</td><td class="pos">+250</td><td class="neg">−250</td></tr>
+                  </tbody></table>
+                  <div class="tiny">Maior crescimento absoluto entre produtos únicos no período.</div>
+                </div>
+                <div class="si-tbl-wrap">
+                  <div class="si-tbl-title">% Adesão por Faixa (Dt Fim)</div>
+                  <table class="data-tbl"><thead><tr><th>Faixa</th><th>Qtd · % com produto</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-g">Fidelizado</span></td><td class="pos"><strong>471 · 48%</strong></td></tr>
+                    <tr><td><span class="badge badge-g">Em Rentab.</span></td><td class="neu"><strong>572 · 32%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Diversif.</span></td><td class="neg"><strong>219 · 24%</strong></td></tr>
+                    <tr><td><span class="badge badge-y">Em Desenv.</span></td><td class="neg"><strong>188 · 18%</strong></td></tr>
+                    <tr><td><span class="badge badge-r">Em Prosp.</span></td><td class="neg"><strong>203 · 11%</strong></td></tr>
+                  </tbody></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panel-subitens -->
+
+    </main>
+  </div>
+
+  <!-- não fechar aqui, o HTML original continua -->
+  <div id="side-panel" class="side-panel" aria-hidden="true">
+    <div class="sp-hdr">
+      <div class="sp-title" id="sp-title">Detalhe do Ente</div>
+      <button class="sp-close" onclick="closePanel()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="sp-body">
+      <div>
+        <div class="sp-sec-title">Resumo</div>
+        <div class="sp-info">
+          <div class="sp-big">IRC: 66</div>
+          <div class="sp-row"><strong>Faixa:</strong> Fidelizado</div>
+          <div class="sp-row"><strong>Δ (fim − inicio):</strong> <span class="pos"><strong>+8 pts</strong></span></div>
+          <div class="sp-row"><strong>Faltam:</strong> 0 pts para proxima faixa (exemplo)</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sp-sec-title">Composicao por Bloco (exemplo)</div>
+        <table class="data-tbl">
+          <thead><tr><th>Bloco</th><th>Pts</th></tr></thead>
+          <tbody>
+            <tr><td>Rentabilidade</td><td><strong>18</strong></td></tr>
+            <tr><td>Investimento</td><td><strong>16</strong></td></tr>
+            <tr><td>Servicos</td><td><strong>20</strong></td></tr>
+            <tr><td>Financiamento</td><td><strong>12</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="tiny" style="margin-top:6px">No Power BI: tooltip explica o que compoe cada bloco.</div>
+      </div>
+
+      <div>
+        <div class="sp-sec-title">Evolucao (6 meses)</div>
+        <svg width="100%" height="90" viewBox="0 0 380 90" style="display:block">
+          <line x1="30" y1="10" x2="360" y2="10" stroke="#eef0f4" stroke-width="1"/>
+          <line x1="30" y1="45" x2="360" y2="45" stroke="#eef0f4" stroke-width="1"/>
+          <line x1="30" y1="80" x2="360" y2="80" stroke="#eef0f4" stroke-width="1"/>
+          <polyline points="30,60 90,54 150,54 210,60 270,46 330,42" fill="none" stroke="#2455a0" stroke-width="2.5"/>
+          <circle cx="30" cy="60" r="3.5" fill="#2455a0"/><circle cx="90" cy="54" r="3.5" fill="#2455a0"/>
+          <circle cx="150" cy="54" r="3.5" fill="#2455a0"/><circle cx="210" cy="60" r="3.5" fill="#2455a0"/>
+          <circle cx="270" cy="46" r="3.5" fill="#2455a0"/><circle cx="330" cy="42" r="3.5" fill="#2455a0"/>
+        </svg>
+        <div class="tiny">No Power BI: permitir selecionar 6/12 meses e comparar com media do recorte.</div>
+      </div>
+
+      <div>
+        <div class="sp-sec-title">Produtos/Servicos (exemplo)</div>
+        <table class="data-tbl">
+          <thead><tr><th>Produto</th><th>Ini</th><th>Fim</th><th>Δ</th></tr></thead>
+          <tbody>
+            <tr><td>ING — Ind. Neg. Gov.</td><td>8</td><td>9</td><td class="pos"><strong>+1</strong></td></tr>
+            <tr><td>Centralizacao Financeira</td><td>5</td><td>5</td><td>—</td></tr>
+            <tr><td>Marketshare Investimento</td><td>3</td><td>4</td><td class="pos"><strong>+1</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tiny muted">Rodape (mockup): valores ilustrativos. Objetivo e especificar layout, narrativa e interacoes para Power BI.</div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(id, el) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      const panel = document.getElementById('panel-' + id);
+      if (panel) panel.classList.add('active');
+      if (el) el.classList.add('active');
+    }
+
+    function showSI(id, btn) {
+      // esconde todos os blocos
+      document.querySelectorAll('.si-bloco').forEach(b => b.style.display = 'none');
+      // remove active de todos os nav buttons
+      document.querySelectorAll('.si-nav').forEach(b => b.classList.remove('active'));
+      // mostra o selecionado
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+      if (btn) btn.classList.add('active');
+    }
+
+    // chamado pelo quadro comparativo: troca de produto, marca o nav e rola ate o detalhe
+    function showSIfromTable(id) {
+      document.querySelectorAll('.si-bloco').forEach(b => b.style.display = 'none');
+      document.querySelectorAll('.si-nav').forEach(b => b.classList.remove('active'));
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+      // achar o botao de nav correspondente e marca-lo
+      const navBtn = document.querySelector('.si-nav[onclick*="' + id + '"]');
+      if (navBtn) navBtn.classList.add('active');
+      // rolar suavemente ate o detalhe
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // inicializa a aba subitens mostrando o primeiro bloco
+    window.addEventListener('DOMContentLoaded', () => {
+      const first = document.querySelector('.si-bloco');
+      if (first) first.style.display = 'block';
+    });
+
+    function toggleDetail(id) {
+      const row = document.getElementById(id);
+      if (!row) return;
+      const open = row.style.display !== 'none';
+      ['d-fidel', 'd-rent', 'd-div', 'd-des', 'd-pro'].forEach(x => {
+        const r = document.getElementById(x);
+        if (r) r.style.display = 'none';
+      });
+      if (!open) row.style.display = 'table-row';
+    }
+
+    function openPanel(name) {
+      const sp = document.getElementById('side-panel');
+      const title = document.getElementById('sp-title');
+      if (title) title.textContent = name;
+      if (sp) {
+        sp.classList.add('open');
+        sp.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function closePanel() {
+      const sp = document.getElementById('side-panel');
+      if (sp) {
+        sp.classList.remove('open');
+        sp.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    // Search + filters for Detalhado (mock)
+    let currentVarFilter = 'all';
+    let currentOrder = 'delta';
+
+    function setVarFilter(v, btn) {
+      currentVarFilter = v;
+      const parent = btn && btn.parentElement;
+      if (parent) parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyEntesFilters();
+    }
+
+    function setOrder(v, btn) {
+      currentOrder = v;
+      const parent = btn && btn.parentElement;
+      if (parent) parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyEntesFilters();
+    }
+
+    function applyFiltersForTbody(tbodyId) {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      const q = (document.getElementById('search-inp')?.value || '').toLowerCase();
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+
+      rows.forEach(tr => {
+        const matchesText = tr.textContent.toLowerCase().includes(q);
+        const matchesVar = currentVarFilter === 'all' || tr.getAttribute('data-var') === currentVarFilter;
+        tr.style.display = (matchesText && matchesVar) ? '' : 'none';
+      });
+
+      const visible = rows.filter(r => r.style.display !== 'none');
+      visible.sort((a, b) => {
+        const attr = (currentOrder === 'pct') ? 'data-pct' : 'data-delta';
+        const ka = Number(a.getAttribute(attr) || 0);
+        const kb = Number(b.getAttribute(attr) || 0);
+        return Math.abs(kb) - Math.abs(ka);
+      });
+      visible.forEach(r => tbody.appendChild(r));
+    }
+
+    function applyEntesFilters() {
+      applyFiltersForTbody('regioes-tbody');
+      applyFiltersForTbody('agencias-tbody');
+      applyFiltersForTbody('entes-tbody');
+      applyFiltersForTbody('prodvar-tbody');
+      applyFiltersForTbody('munfaixa-tbody');
+    }
+
+    const search = document.getElementById('search-inp');
+    if (search) search.addEventListener('input', applyEntesFilters);
+
+    // Animate bars on load
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.bar-fill').forEach(el => {
+        const w = el.style.width;
+        el.style.width = '0';
+        requestAnimationFrame(() => requestAnimationFrame(() => { el.style.width = w; }));
+      });
+    });
+  </script>
+</body>
+</html>
